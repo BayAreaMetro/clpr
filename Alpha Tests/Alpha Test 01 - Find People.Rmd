@@ -80,13 +80,6 @@ common.typical <- filter(every.seq, percent_rank(MedianFreq) > 0.95)
 common.typical <- arrange(common.typical, desc(MedianFreq))
 ```
 
-#### Select common sequences
-```{r common_typical_shiny, echo=FALSE, cache=FALSE}
-#numericInput("rows", "How many rows would you like to see?", 50)
-#renderTable({head(common.typical, input$rows)})
-```
-
-
 #### Show sequences that contain ...
 ```{r common_typical_string_shiny, echo=FALSE, cache=FALSE}
 textInput("Contains", "Route sequence contains:", "TYPE HERE")
