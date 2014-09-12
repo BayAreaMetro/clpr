@@ -13,9 +13,6 @@ output:
 #### Purpose
 Examine a month of the anonymized Clipper data to try and find rare, but persistent, patterns, that may allow a third-party consumer of the data to identify individual travelers.  This is part of the pre-release anonymized Clipper data alpha testing.
 
-#### Status
-2014 08 08 seems to be working
-
 #### Outputs
 1 Simple Shiny tables of rare and common sequences.
 
@@ -39,7 +36,7 @@ knitr::opts_chunk$set(cache=TRUE)
 ```{r data_reads}
 #input.seq = read.table(file = "./Sequence Frequencies by Date.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
 input.seq = read.table(file = "~DavidWork/Documents/Clipper/Sequence Frequencies by Date.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
-head(input.seq, n =10)
+head(input.seq, n = 10)
 ```
 
 #### Explore typical weekdays
@@ -75,7 +72,7 @@ common.typical <- arrange(common.typical, desc(MedianFreq))
 
 ## Interactives
 
-#### Sequences that occur ONLY ONCE EVERY typical weekday
+#### Sequences that occur ONLY ONCE EVERY typical weekday (Total = `r nrow(rare.typical) `)
 ```{r rare_typical_shiny, echo=FALSE, cache=FALSE}
 numericInput("rows", "How many rows would you like to see?", 50)
 renderTable({head(rare.typical, input$rows)})
