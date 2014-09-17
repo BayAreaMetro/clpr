@@ -24,8 +24,8 @@ library(knitr)
 suppressMessages(library(dplyr))
 library(shiny)
 library(ggplot2)
-#setwd("M:/Data/Clipper/Alpha Tests/_working")
-setwd("~DavidWork/Documents/Clipper")
+setwd("M:/Data/Clipper/Alpha Tests/_working")
+#setwd("~DavidWork/Documents/Clipper")
 ```
 
 ```{r config, include=FALSE}
@@ -34,9 +34,9 @@ knitr::opts_chunk$set(cache=TRUE)
 
 #### Read in the sequence data
 ```{r data_reads}
-#input.seq = read.table(file = "M:/Data/Clipper/Alpha Tests/_working/Sequence Frequencies by Date.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+input.seq = read.table(file = "M:/Data/Clipper/Alpha Tests/_working/Sequence Frequencies by Date.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
 #input.seq = read.table(file = "M:/Data/Clipper/Alpha Tests/_working/Sequence Frequencies by Date (test).csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
-input.seq = read.table(file = "~DavidWork/Documents/Clipper/Sequence Frequencies by Date (test).csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+#input.seq = read.table(file = "~DavidWork/Documents/Clipper/Sequence Frequencies by Date (test).csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
 ```
 
 #### Prepare all sequence data
@@ -93,10 +93,6 @@ renderPlot({
 
 ### Three-Filter Table
 ```{r shiny_table_threefilter, echo=FALSE, cache=FALSE}
-
-textInput("Filter01", "Sequences that contain:", " ")
-textInput("Filter02", "And also contain:", " ")
-textInput("Filter03", "And also contain:", " ")
 
 renderTable({
   
