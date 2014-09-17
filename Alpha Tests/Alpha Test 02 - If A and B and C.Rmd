@@ -4,20 +4,17 @@ author: "David Ory"
 runtime: shiny
 output:
   html_document:
-    toc: true
     theme: cosmo
+    toc: yes
 ---
 
 ## Administration
 
-### Purpose
+#### Purpose
 Examine a month of the anonymized Clipper data to try and find rare, but persistent, patterns, that may allow a third-party consumer of the data to identify individual travelers.  This is part of the pre-release anonymized Clipper data alpha testing.  In this test, sequences by day are presented for sequences that contain specific segments.
 
-### TODO
-1 Add companion table to chart, showing the filtered data in a table
-
-### Outputs
-1 Interactive charts and tables.
+#### TODO
+1 Check memory on PC -- too heavy for Mac?
 
 ## Procedure
 
@@ -27,7 +24,8 @@ library(knitr)
 suppressMessages(library(dplyr))
 library(shiny)
 library(ggplot2)
-setwd("M:/Data/Clipper/Alpha Tests/_working")
+#setwd("M:/Data/Clipper/Alpha Tests/_working")
+setwd("~DavidWork/Documents/Clipper")
 ```
 
 ```{r config, include=FALSE}
@@ -36,9 +34,9 @@ knitr::opts_chunk$set(cache=TRUE)
 
 #### Read in the sequence data
 ```{r data_reads}
-#input.seq = read.table(file = "./Sequence Frequencies by Date.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
 #input.seq = read.table(file = "M:/Data/Clipper/Alpha Tests/_working/Sequence Frequencies by Date.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
-input.seq = read.table(file = "M:/Data/Clipper/Alpha Tests/_working/Sequence Frequencies by Date (test).csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+#input.seq = read.table(file = "M:/Data/Clipper/Alpha Tests/_working/Sequence Frequencies by Date (test).csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+input.seq = read.table(file = "~DavidWork/Documents/Clipper/Sequence Frequencies by Date (test).csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
 ```
 
 #### Prepare all sequence data
@@ -49,8 +47,6 @@ all.seq <- input.seq %.%
   summarise(Cards = sum(n))
 head(all.seq, n = 31)
 ```
-
-## Interactives
 
 #### Plot all data
 ```{r shiny_plot_all, echo=FALSE, cache=FALSE}
@@ -63,38 +59,39 @@ renderPlot({
 
 ```
 
-#### Three Filter Plot
+## Interactives
+
+### Three-Filter Plot
 ```{r shiny_plot_threefilter, echo=FALSE, cache=FALSE}
 
-# textInput("Filter01", "Sequences that contain:", " ")
-# textInput("Filter02", "And also contain:", " ")
-# textInput("Filter03", "And also contain:", " ")
-# 
-# renderPlot({
-#   
-#   chart.data <- input.seq %.%
-#     filter(grepl(input$Filter01, RunSequence)) %.%
-#     mutate(WorkingSequence = RunSequence) %.%
-#     mutate(WorkingSequence = gsub(input$Filter01,"", WorkingSequence)) %.%
-#     filter(grepl(input$Filter02, WorkingSequence)) %.%
-#     mutate(WorkingSequence = gsub(input$Filter02, "", WorkingSequence)) %.%
-#     filter(grepl(input$Filter03, WorkingSequence)) %.%
-#     mutate(DayOfMonth = substr(CircadianDate,9,10)) %.%
-#     group_by(DayOfMonth) %.%
-#     summarise(Cards = sum(n))
-#   
-#   chart_title <- paste("Sequences with ", "'", input$Filter01, "'", " and ", "'", input$Filter02, "'", " and ", "'", input$Filter03, "'")
-# 
-#   plot <- ggplot(chart.data, aes(x = DayOfMonth, y = Cards)) + geom_point(size = 4, colour = "#D55E00") + xlab("Day of April 2013") + ylab("Clipper Cards Used") + labs(title = chart_title) + theme(text = element_text(size=15), axis.text.x = element_text(vjust=1), axis.title.y = element_text(vjust=2.0), legend.position="none")
-#   
-#   print(plot)
-#   
-#   
-#   }, height = 600)
+textInput("Filter01", "Sequences that contain:", " ")
+textInput("Filter02", "And also contain:", " ")
+textInput("Filter03", "And also contain:", " ")
+
+renderPlot({
+  
+  chart.data <- input.seq %.%
+    filter(grepl(input$Filter01, RunSequence)) %.%
+    mutate(WorkingSequence = RunSequence) %.%
+    mutate(WorkingSequence = gsub(input$Filter01,"", WorkingSequence)) %.%
+    filter(grepl(input$Filter02, WorkingSequence)) %.%
+    mutate(WorkingSequence = gsub(input$Filter02, "", WorkingSequence)) %.%
+    filter(grepl(input$Filter03, WorkingSequence)) %.%
+    mutate(DayOfMonth = substr(CircadianDate,9,10)) %.%
+    group_by(DayOfMonth) %.%
+    summarise(Cards = sum(n))
+  
+  chart_title <- paste("Sequences with ", "'", input$Filter01, "'", " and ", "'", input$Filter02, "'", " and ", "'", input$Filter03, "'")
+
+  plot <- ggplot(chart.data, aes(x = DayOfMonth, y = Cards)) + geom_point(size = 4, colour = "#D55E00") + xlab("Day of April 2013") + ylab("Clipper Cards Used") + labs(title = chart_title) + theme(text = element_text(size=15), axis.text.x = element_text(vjust=1), axis.title.y = element_text(vjust=2.0), legend.position="none")
+  
+  print(plot)
+  
+  }, height = 600)
 
 ```
 
-#### Three Filter Table
+### Three-Filter Table
 ```{r shiny_table_threefilter, echo=FALSE, cache=FALSE}
 
 textInput("Filter01", "Sequences that contain:", " ")
@@ -113,24 +110,8 @@ renderTable({
     select(CircadianDate, RunSequence, Count = n)
   
   head(table.data, n = 100)
-  
-  
+   
   })
 
-```
-
-```{r}
-# sequence01 <- "Zone 2"
-# sequence02 <- "Lake Merritt"
-# sequence03 <- "Embarcadero"
-# 
-# table.data <- input.seq %.%
-#     filter(grepl(sequence01, RunSequence)) %.%
-#     mutate(WorkingSequence = RunSequence) %.%
-#     mutate(WorkingSequence = gsub(sequence01,"", WorkingSequence)) %.%
-#     filter(grepl(sequence02, WorkingSequence)) %.%
-#     mutate(WorkingSequence = gsub(sequence02, "", WorkingSequence)) %.%
-#     filter(grepl(sequence03, WorkingSequence)) %.%
-#     select(CircadianDate, RunSequence, Count = n)
 ```
 
