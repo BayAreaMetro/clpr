@@ -24,8 +24,8 @@ library(knitr)
 suppressMessages(library(dplyr))
 suppressMessages(library(plyr))
 library(shiny)
-setwd("M:/Data/Clipper/Alpha Tests/_working")
-#setwd("~DavidWork/Documents/Clipper")
+#setwd("M:/Data/Clipper/Alpha Tests/_working")
+setwd("~DavidWork/Documents/Clipper")
 ```
 
 ```{r config, include=FALSE}
@@ -34,8 +34,8 @@ knitr::opts_chunk$set(cache=TRUE)
 
 #### Read in the sequence data
 ```{r data_reads}
-input.seq = read.table(file = "M:/Data/Clipper/Alpha Tests/_working/Sequence Frequencies for Random Weekday.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
-#input.seq = read.table(file = "~DavidWork/Documents/Clipper/Sequence Frequencies by Date.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+#input.seq = read.table(file = "M:/Data/Clipper/Alpha Tests/_working/Sequence Frequencies for Random Weekday.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+input.seq = read.table(file = "~DavidWork/Documents/Clipper/Sequence Frequencies for Random Weekday.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
 head(input.seq, n = 10)
 ```
 

@@ -13,8 +13,8 @@ output:
 #### Purpose
 Examine a month of the anonymized Clipper data to try and find rare, but persistent, patterns, that may allow a third-party consumer of the data to identify individual travelers.  This is part of the pre-release anonymized Clipper data alpha testing.  In this test, sequences by day are presented for sequences that contain specific segments. Note that this version of the anonmyzed data suppresses the actual date, instead providing a year, month, day of week, and week indicator.
 
-#### TODO
-1 Check memory on PC -- too heavy for Mac?
+#### Note
+1 A bit too heavy for MacBook
 
 ## Procedure
 
@@ -24,8 +24,8 @@ library(knitr)
 suppressMessages(library(dplyr))
 library(shiny)
 library(ggplot2)
-setwd("M:/Data/Clipper/Alpha Tests/_working")
-#setwd("~DavidWork/Documents/Clipper")
+#setwd("M:/Data/Clipper/Alpha Tests/_working")
+setwd("~DavidWork/Documents/Clipper")
 ```
 
 ```{r config, include=FALSE}
@@ -34,8 +34,8 @@ knitr::opts_chunk$set(cache=TRUE)
 
 #### Read in the sequence data
 ```{r data_reads}
-input.seq = read.table(file = "M:/Data/Clipper/Alpha Tests/_working/Sequence Frequencies for Random Weekday.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
-#input.seq = read.table(file = "~DavidWork/Documents/Clipper/Sequence Frequencies by Date (test).csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+#input.seq = read.table(file = "M:/Data/Clipper/Alpha Tests/_working/Sequence Frequencies for Random Weekday.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+input.seq = read.table(file = "~DavidWork/Documents/Clipper/Sequence Frequencies for Random Weekday.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
 ```
 
 #### Prepare all sequence data
@@ -64,9 +64,9 @@ renderPlot({
 ### Three-Filter Plot
 ```{r shiny_plot_threefilter, echo=FALSE, cache=FALSE}
 
-textInput("Filter01", "Sequences that contain:", " ")
-textInput("Filter02", "And also contain:", " ")
-textInput("Filter03", "And also contain:", " ")
+textInput("Filter01", "Sequences that contain:", "S")
+textInput("Filter02", "And also contain:", "F")
+textInput("Filter03", "And also contain:", "M")
 
 renderPlot({
   
