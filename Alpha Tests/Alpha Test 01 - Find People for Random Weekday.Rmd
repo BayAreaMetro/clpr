@@ -1,0 +1,80 @@
+---
+title: "Alpha Test 01 - Examine Sequences for Random Weekday"
+author: "David Ory"
+runtime: shiny
+output:
+  html_document:
+    toc: true
+    theme: cosmo
+---
+
+## Administration
+
+#### Purpose
+Examine a month of the anonymized Clipper data to try and find rare, but persistent, patterns, that may allow a third-party consumer of the data to identify individual travelers.  This is part of the pre-release anonymized Clipper data alpha testing. Note that this version of the anonmyzed data suppresses the actual date, instead providing a year, month, day of week, and week indicator.
+
+#### Outputs
+1 Simple Shiny tables of rare and common sequences.
+
+## Procedure
+
+#### Overhead
+```{r overhead}
+library(knitr)
+suppressMessages(library(dplyr))
+suppressMessages(library(plyr))
+library(shiny)
+setwd("M:/Data/Clipper/Alpha Tests/_working")
+#setwd("~DavidWork/Documents/Clipper")
+```
+
+```{r config, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE)
+```
+
+#### Read in the sequence data
+```{r data_reads}
+input.seq = read.table(file = "M:/Data/Clipper/Alpha Tests/_working/Sequence Frequencies for Random Weekday.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+#input.seq = read.table(file = "~DavidWork/Documents/Clipper/Sequence Frequencies by Date.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(input.seq, n = 10)
+```
+
+#### Explore typical weekdays
+```{r typical_weekdays}
+seq.typical <- filter(input.seq, CircadianDayOfWeek == "Tuesday" | CircadianDayOfWeek == "Wednesday" |CircadianDayOfWeek == "Thursday")
+seq.typical <- select(seq.typical, DayID, RunSequence, Count = n)
+seq.sum <- ddply (seq.typical, .(RunSequence), summarise, SumFreq = sum(Count), MedianFreq = median(Count), MinFreq = min(Count), MaxFreq = max(Count))
+```
+
+#### Sequences that occur EVERY typical weekday
+```{r every_typical}
+every.typical <- tally(group_by(seq.typical, RunSequence), wt = NULL, sort = TRUE)
+every.typical <- filter(every.typical, n == length(unique(seq.typical$DayID)))
+every.typical <- select(every.typical, -n)
+every.seq <- left_join(x = every.typical, y = seq.sum, by = "RunSequence")
+every.seq <- select(every.seq, -SumFreq)
+every.seq <- arrange(every.seq, desc(MedianFreq))
+```
+
+#### Sequences that occur ONLY ONCE EVERY typical weekday
+```{r rare_typical}
+rare.typical <- every.seq %.%
+  filter(MaxFreq < 5) %.%
+  select(RunSequence, MinFreq, MaxFreq) %.%
+  arrange(MaxFreq)
+```
+
+## Interactives
+
+#### Sequences that occur INFREQUENTLY EVERY typical weekday (Total = `r nrow(rare.typical) `)
+```{r rare_typical_shiny, echo=FALSE, cache=FALSE}
+numericInput("rows", "How many rows would you like to see?", 50)
+renderTable({head(rare.typical, input$rows)})
+```
+
+#### Sequences that occur EVERY typical weekday that contain ...
+```{r common_typical_string_shiny, echo=FALSE, cache=FALSE}
+textInput("Contains", "Route sequence contains:", "TYPE HERE")
+renderTable({head(filter(every.seq, grepl(input$Contains,every.seq$RunSequence)), 50)})
+```
+
