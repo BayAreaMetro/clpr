@@ -20,7 +20,7 @@ setwd("M:/Data/Clipper/Alpha Tests/_working")
 # 2.  Search Windows ODBC --> 'Set up data sources (ODBC)
 # 3.  Add ODBC Driver 11 for SQL Server connection
 
-connection <- odbcConnect("Clipper Alpha", uid = "DORY", pwd = "GIS@mtc355")
+connection <- odbcConnect("Clipper Alpha", uid = "XXXX", pwd = "XXXX")
 df_raw <- sqlQuery(connection,"SELECT
                     DATEPART(yyyy,[CircadianDate]) AS Year
                    ,DATEPART(month,[CircadianDate]) AS Month
