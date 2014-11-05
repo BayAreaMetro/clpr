@@ -1,0 +1,123 @@
+---
+title: "Summarize Transfers"
+author: "David Ory"
+output:
+  html_document:
+    theme: cosmo
+    toc: yes
+runtime: shiny
+---
+
+## Administration
+
+#### Purpose
+The anonymous Clipper data is potentially an excellent source for quantifying operator-to-operator transit movements.  Here, we seek to understand transfers in the travel model sense, i.e. a movement between an origin and destination that requires a tranfer between or within transit operators.  This definition differs from transfers as defined by certain transit agencies, which generally allow multiple boardings at no or reduced cost during a narrow time window.  Here, we will attempt to develop rules for each pair of operators to try and quantify the transfers of interest.  This script uses data derived from the anonymous Clipper data -- see `Extract Transfer for Random Weekday to CSV.R`.
+
+#### _ISSUES_
+
+#### _TODO_
+1.  Build a data series for Muni on to BART on times, from 0 mins to 120 mins (median, typical weekdays)
+2.  Build a data series for BART off to Muni on times, from 0 mins to 120 mins (median, typical weekdays)
+3.  Learn something
+4.  Generalize
+5.  Apply
+
+## Overhead
+
+#### Libraries
+```{r overhead}
+library(knitr)
+library(stringr)
+suppressMessages(library(dplyr))
+```
+
+#### Knitr config
+```{r config, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE)
+```
+
+## Data reads
+```{r data-reads}
+# Start with one month of data
+load("M:/Data/Clipper/Transfers/From Anonymous/2013 - 3 Transfer Database for Random Weekdays.RData")
+
+```
+
+## Explore
+```{r start-by-exploring}
+
+# start with BART to Muni movements
+table(working.output$from_AgencyName)
+table(working.output$to_AgencyName)
+
+Muni_to_BART_Time = 60
+BART_to_Muni_Time = 20
+
+# extract typical weekday transfers
+working <- working.output %>%
+  mutate(from_AgencyName = str_trim(from_AgencyName)) %>%
+  mutate(to_AgencyName   = str_trim(to_AgencyName)) %>%
+  filter(from_AgencyName == 'SF Muni') %>%
+  filter(to_AgencyName == 'BART') %>%
+  filter(Diff_Min_TagOn_to_TagOn <= Muni_to_BART_Time) %>%
+  filter(CircadianDayOfWeek > 2) %>%
+  filter(CircadianDayOfWeek < 6)
+
+working_sum <- working %>%
+  group_by(Year, Month, CircadianDayOfWeek, RandomWeekID) %>%
+  summarise(Muni_to_BART = n())
+
+summary(working_sum$Muni_to_BART)
+# median = 7817
+
+# match the above quantity with the reverse movement
+# extract typical weekday transfers
+working <- working.output %>%
+  mutate(from_AgencyName = str_trim(from_AgencyName)) %>%
+  mutate(to_AgencyName   = str_trim(to_AgencyName)) %>%
+  filter(from_AgencyName == 'BART') %>%
+  filter(to_AgencyName == 'SF Muni') %>%
+  filter(Diff_Min_TagOff_to_TagOn <= BART_to_Muni_Time) %>%
+  filter(CircadianDayOfWeek > 2) %>%
+  filter(CircadianDayOfWeek < 6)
+
+working_sum <- working %>%
+  group_by(Year, Month, CircadianDayOfWeek, RandomWeekID) %>%
+  summarise(BART_to_Muni = n())
+
+summary(working_sum$BART_to_Muni)
+# median = 7667
+
+
+```
+
+```{r both-way-plots}
+
+OPERATOR_A = 'SF Muni'
+OPERATOR_B = 'BART'
+
+# Extract A to B data, all times
+a_to_b <- working.output %>%
+  mutate(from_AgencyName = str_trim(from_AgencyName)) %>%
+  mutate(to_AgencyName   = str_trim(to_AgencyName)) %>%
+  filter(from_AgencyName == OPERATOR_A) %>%
+  filter(to_AgencyName   == OPERATOR_B) %>%
+  filter(CircadianDayOfWeek > 2) %>%
+  filter(CircadianDayOfWeek < 6)
+
+a_to_b.sum <- a_to_b %>%
+  group_by(Year, Month, CircadianDayOfWeek, RandomWeekID, Diff_Min_TagOn_to_TagOn) %>%
+  summarise(a_to_b_count = n())
+
+a_to_b.median <- a_to_b.sum %>%
+  group_by(Year, Month, Diff_Min_TagOn_to_TagOn) %>%
+  summarise(typical_weekdays = n(), a_to_b_median = median(a_to_b_count))
+
+a_to_b.median <- a_to_b.median %>%
+  mutate(a_to_b_median_cum = cumsum(a_to_b_median))
+
+
+
+
+```
+
