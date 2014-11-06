@@ -16,11 +16,10 @@ The anonymous Clipper data is potentially an excellent source for quantifying op
 #### _ISSUES_
 
 #### _TODO_
-1.  Build a data series for Muni on to BART on times, from 0 mins to 120 mins (median, typical weekdays)
-2.  Build a data series for BART off to Muni on times, from 0 mins to 120 mins (median, typical weekdays)
-3.  Learn something
-4.  Generalize
-5.  Apply
+2.  Make plots interactive and clean up
+4.  Use charts to infer break points (top 10?)
+5.  Build data set with both way transfers using data points (median? mean plus SD?)
+6.  Add-in data for more months
 
 ## Overhead
 
@@ -28,6 +27,7 @@ The anonymous Clipper data is potentially an excellent source for quantifying op
 ```{r overhead}
 library(knitr)
 library(stringr)
+library(ggplot2)
 suppressMessages(library(dplyr))
 ```
 
@@ -40,84 +40,92 @@ knitr::opts_chunk$set(cache=TRUE)
 ```{r data-reads}
 # Start with one month of data
 load("M:/Data/Clipper/Transfers/From Anonymous/2013 - 3 Transfer Database for Random Weekdays.RData")
-
-```
-
-## Explore
-```{r start-by-exploring}
-
-# start with BART to Muni movements
 table(working.output$from_AgencyName)
-table(working.output$to_AgencyName)
-
-Muni_to_BART_Time = 60
-BART_to_Muni_Time = 20
-
-# extract typical weekday transfers
-working <- working.output %>%
-  mutate(from_AgencyName = str_trim(from_AgencyName)) %>%
-  mutate(to_AgencyName   = str_trim(to_AgencyName)) %>%
-  filter(from_AgencyName == 'SF Muni') %>%
-  filter(to_AgencyName == 'BART') %>%
-  filter(Diff_Min_TagOn_to_TagOn <= Muni_to_BART_Time) %>%
-  filter(CircadianDayOfWeek > 2) %>%
-  filter(CircadianDayOfWeek < 6)
-
-working_sum <- working %>%
-  group_by(Year, Month, CircadianDayOfWeek, RandomWeekID) %>%
-  summarise(Muni_to_BART = n())
-
-summary(working_sum$Muni_to_BART)
-# median = 7817
-
-# match the above quantity with the reverse movement
-# extract typical weekday transfers
-working <- working.output %>%
-  mutate(from_AgencyName = str_trim(from_AgencyName)) %>%
-  mutate(to_AgencyName   = str_trim(to_AgencyName)) %>%
-  filter(from_AgencyName == 'BART') %>%
-  filter(to_AgencyName == 'SF Muni') %>%
-  filter(Diff_Min_TagOff_to_TagOn <= BART_to_Muni_Time) %>%
-  filter(CircadianDayOfWeek > 2) %>%
-  filter(CircadianDayOfWeek < 6)
-
-working_sum <- working %>%
-  group_by(Year, Month, CircadianDayOfWeek, RandomWeekID) %>%
-  summarise(BART_to_Muni = n())
-
-summary(working_sum$BART_to_Muni)
-# median = 7667
-
+# data_03_may_2013 <- working.output
 
 ```
 
-```{r both-way-plots}
 
-OPERATOR_A = 'SF Muni'
-OPERATOR_B = 'BART'
+```{r plot-both-way-function, echo=FALSE, cache=TRUE}
+# Re-write the above chunk as a function
+Make_to_from_plot <- function(transfer_df, a_string, b_string){
+  
+  # A to B
+  a_to_b <- transfer_df %>%
+    mutate(from_AgencyName = str_trim(from_AgencyName)) %>%
+    mutate(to_AgencyName   = str_trim(to_AgencyName)) %>%
+    filter(from_AgencyName == a_string) %>%
+    filter(to_AgencyName   == b_string)
+  
+  a_to_b <- a_to_b %>%
+    mutate(key_time = ifelse(!is.na(Diff_Min_TagOff_to_TagOn), Diff_Min_TagOff_to_TagOn, Diff_Min_TagOn_to_TagOn)) %>%
+    group_by(Year, Month, CircadianDayOfWeek, RandomWeekID, key_time) %>%
+    summarise(transfers = n()) %>%
+    group_by(Year, Month, key_time) %>%
+    summarise(typical_weekdays = n(), median_transfers = median(transfers)) %>%
+    mutate(cumulative_median_transfers = cumsum(median_transfers)) %>%
+    select(Year, Month, key_time, cumulative_median_transfers) %>%
+    mutate(movement = paste(a_string," to ", b_string)) %>%
+    filter(key_time > 0) %>%
+    filter(key_time < 130)
+  
+  # B to A
+  b_to_a <- transfer_df %>%
+    mutate(from_AgencyName = str_trim(from_AgencyName)) %>%
+    mutate(to_AgencyName   = str_trim(to_AgencyName)) %>%
+    filter(from_AgencyName == b_string) %>%
+    filter(to_AgencyName   == a_string)
+  
+  b_to_a <- b_to_a %>%
+    mutate(key_time = ifelse(!is.na(Diff_Min_TagOff_to_TagOn), Diff_Min_TagOff_to_TagOn, Diff_Min_TagOn_to_TagOn)) %>%
+    group_by(Year, Month, CircadianDayOfWeek, RandomWeekID, key_time) %>%
+    summarise(transfers = n()) %>%
+    group_by(Year, Month, key_time) %>%
+    summarise(typical_weekdays = n(), median_transfers = median(transfers)) %>%
+    mutate(cumulative_median_transfers = cumsum(median_transfers)) %>%
+    select(Year, Month, key_time, cumulative_median_transfers) %>%
+    mutate(movement = paste(b_string," to ", a_string)) %>%
+    filter(key_time > 0) %>%
+    filter(key_time < 130)
+  
+  # Merge and plot
+  data.to_plot <- rbind(a_to_b, b_to_a)
+  
+  # Plot
+  plot <- ggplot(data.to_plot, aes(x = key_time, y = cumulative_median_transfers, colour = movement, group = movement)) + 
+    xlab("Time between Tags") + 
+    ylab("Cumulative Transfers") + 
+    geom_line() + 
+    ggtitle(paste(a_string,"to/from", b_string))
+  
+  return(plot)
+  
+}
 
-# Extract A to B data, all times
-a_to_b <- working.output %>%
+```
+
+## Operator Plots
+#### Prepare typical weekday data
+```{r typical-weekday-data}
+transfer_data <- working.output %>%
   mutate(from_AgencyName = str_trim(from_AgencyName)) %>%
   mutate(to_AgencyName   = str_trim(to_AgencyName)) %>%
-  filter(from_AgencyName == OPERATOR_A) %>%
-  filter(to_AgencyName   == OPERATOR_B) %>%
   filter(CircadianDayOfWeek > 2) %>%
   filter(CircadianDayOfWeek < 6)
+```
 
-a_to_b.sum <- a_to_b %>%
-  group_by(Year, Month, CircadianDayOfWeek, RandomWeekID, Diff_Min_TagOn_to_TagOn) %>%
-  summarise(a_to_b_count = n())
+### SF Muni & BART
+```{r sf_muni-bart}
+plot <- Make_to_from_plot(transfer_data, 'SF Muni', 'BART')
+plot
 
-a_to_b.median <- a_to_b.sum %>%
-  group_by(Year, Month, Diff_Min_TagOn_to_TagOn) %>%
-  summarise(typical_weekdays = n(), a_to_b_median = median(a_to_b_count))
+```
 
-a_to_b.median <- a_to_b.median %>%
-  mutate(a_to_b_median_cum = cumsum(a_to_b_median))
+### AC Transit & BART
+```{r ac_transit-bart}
 
-
-
+plot <- Make_to_from_plot(transfer_data, 'AC Transit', 'BART')
+plot
 
 ```
 
