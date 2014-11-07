@@ -1,0 +1,76 @@
+---
+title: "Build Transfer Database"
+author: "David Ory"
+date: "Thursday, November 06, 2014"
+output:
+  html_document:
+    theme: cosmo
+    toc: yes
+---
+## Administration
+
+#### Purpose
+The anonymous Clipper data is potentially an excellent source for quantifying operator-to-operator transit movements.  Here, we seek to understand transfers in the travel model sense, i.e. a movement between an origin and destination that requires a tranfer between or within transit operators.  This definition differs from transfers as defined by certain transit agencies, which generally allow multiple boardings at no or reduced cost during a narrow time window.  Here, we implement a set of rules to build a database of transfers.  This script uses data derived from the anonymous Clipper data -- see `Extract Transfer for Random Weekday to CSV.R`.  Please see `To and From Interactive.Rmd` for an interactive charting engine of operator pairs.
+
+#### _ISSUES_
+
+#### _TODO_
+4.  Use charts to infer break points (top 10?)
+6.  Build out input data base
+7.  Build data set with both way transfers using data points
+8.  Add-in data for more months
+
+```{r overhead, echo=FALSE}
+library(knitr)
+library(stringr)
+library(ggplot2)
+suppressMessages(library(dplyr))
+```
+
+```{r config, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE)
+```
+
+## Data reads
+```{r data-reads}
+# Clipper extracts
+load("M:/Data/Clipper/Transfers/From Anonymous/2013 - 3 Transfer Database for Random Weekdays.RData")
+data_03_may_2013 <- working.output
+
+load("M:/Data/Clipper/Transfers/From Anonymous/2013 - 4 Transfer Database for Random Weekdays.RData")
+data_04_apr_2013 <- working.output
+
+# Combine
+working <- rbind(data_03_may_2013, data_04_apr_2013)
+
+# Transfer rules
+transfer.rules <- read.table(file = "transfer_rules_database.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+
+```
+
+## Processing
+```{r data-processing}
+
+typical.weekday <- working %>%
+  mutate(from_AgencyName = str_trim(from_AgencyName)) %>%
+  mutate(to_AgencyName   = str_trim(to_AgencyName)) %>%
+  filter(CircadianDayOfWeek > 2) %>%
+  filter(CircadianDayOfWeek < 6) %>%
+  mutate(key_time = ifelse(!is.na(Diff_Min_TagOff_to_TagOn), Diff_Min_TagOff_to_TagOn, Diff_Min_TagOn_to_TagOn)) %>%
+  select(Year, Month, CircadianDayOfWeek, RandomWeekID, from_AgencyName, to_AgencyName, key_time)
+
+transfer.data <- inner_join(typical.weekday, transfer.rules, by = c("from_AgencyName", "to_AgencyName"))
+
+transfer.sum <- transfer.data %>%
+  filter(key_time <= max_time) %>%
+  select(-key_time, -max_time) %>%
+  group_by(Year, Month, CircadianDayOfWeek, RandomWeekID, from_AgencyName, to_AgencyName) %>%
+  summarise(transfers = n())
+
+```
+
+## Write to disk
+```{r writes}
+write.csv(transfer.sum, "M:/Data/Clipper/Transfers/From Anonymous/Transfers by day by agency pair.csv", row.names = FALSE, quote = T)
+```
+

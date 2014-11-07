@@ -1,5 +1,5 @@
 ---
-title: "Summarize Transfers"
+title: "To and From Interactive"
 author: "David Ory"
 output:
   html_document:
@@ -13,36 +13,23 @@ runtime: shiny
 #### Purpose
 The anonymous Clipper data is potentially an excellent source for quantifying operator-to-operator transit movements.  Here, we seek to understand transfers in the travel model sense, i.e. a movement between an origin and destination that requires a tranfer between or within transit operators.  This definition differs from transfers as defined by certain transit agencies, which generally allow multiple boardings at no or reduced cost during a narrow time window.  Here, we will attempt to develop rules for each pair of operators to try and quantify the transfers of interest.  This script uses data derived from the anonymous Clipper data -- see `Extract Transfer for Random Weekday to CSV.R`.
 
-#### _ISSUES_
-
-#### _TODO_
-2.  Make plots interactive and clean up
-4.  Use charts to infer break points (top 10?)
-5.  Build data set with both way transfers using data points (median? mean plus SD?)
-6.  Add-in data for more months
-
-## Overhead
-
-#### Libraries
-```{r overhead}
+```{r overhead, echo=FALSE}
 library(knitr)
 library(stringr)
 library(ggplot2)
 suppressMessages(library(dplyr))
 ```
 
-#### Knitr config
 ```{r config, include=FALSE}
 knitr::opts_chunk$set(cache=TRUE)
 ```
 
 ## Data reads
 ```{r data-reads}
-# Start with one month of data
+# Use May 2013 as prototype
 load("M:/Data/Clipper/Transfers/From Anonymous/2013 - 3 Transfer Database for Random Weekdays.RData")
 table(working.output$from_AgencyName)
 # data_03_may_2013 <- working.output
-
 ```
 
 
@@ -95,7 +82,8 @@ Make_to_from_plot <- function(transfer_df, a_string, b_string){
   plot <- ggplot(data.to_plot, aes(x = key_time, y = cumulative_median_transfers, colour = movement, group = movement)) + 
     xlab("Time between Tags") + 
     ylab("Cumulative Transfers") + 
-    geom_line() + 
+    theme(text = element_text(size = 16), axis.title.x = element_text(vjust = -0.5), axis.title.y = element_text(vjust = 2.0), panel.grid.major.x = element_line(colour = "black")) +
+    geom_line(size = 2) + 
     ggtitle(paste(a_string,"to/from", b_string))
   
   return(plot)
@@ -104,28 +92,26 @@ Make_to_from_plot <- function(transfer_df, a_string, b_string){
 
 ```
 
-## Operator Plots
-#### Prepare typical weekday data
-```{r typical-weekday-data}
+```{r typical-weekday-data, echo=FALSE}
+# Prepare typical weekday data
 transfer_data <- working.output %>%
-  mutate(from_AgencyName = str_trim(from_AgencyName)) %>%
-  mutate(to_AgencyName   = str_trim(to_AgencyName)) %>%
   filter(CircadianDayOfWeek > 2) %>%
   filter(CircadianDayOfWeek < 6)
 ```
 
-### SF Muni & BART
-```{r sf_muni-bart}
-plot <- Make_to_from_plot(transfer_data, 'SF Muni', 'BART')
-plot
+## Interactive
+```{r shiny_plot_threefilter, echo=FALSE, cache=FALSE}
 
-```
+textInput("a_string", "Operator A:", "SF Muni")
+textInput("b_string", "Operator B:", "BART")
 
-### AC Transit & BART
-```{r ac_transit-bart}
-
-plot <- Make_to_from_plot(transfer_data, 'AC Transit', 'BART')
-plot
+renderPlot({
+  
+  plot <- Make_to_from_plot(transfer_data, input$a_string, input$b_string)
+  
+  print(plot)
+  
+  }, height = 600, width = 900)
 
 ```
 

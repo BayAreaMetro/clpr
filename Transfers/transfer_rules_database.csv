@@ -1,0 +1,3 @@
+from_AgencyName, to_AgencyName, max_time
+'SF Muni','BART',40
+'BART','SF Muni',20
