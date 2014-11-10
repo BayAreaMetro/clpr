@@ -10,14 +10,15 @@
 suppressMessages(library(dplyr))
 library(stringr)
 library(RODBC)
-setwd("M:/Data/Clipper/Transfers/From Anonymous")
+setwd("M:/Data/Clipper/Transfers/From Anonymous/extracts")
 
 # Parameters 
 MAX_TIME = 120
 
 # Extract data a month at a time
-MONTH_SELECT = 4
-YEAR_SELECT  = 2013
+MONTH_SELECT  = 4
+YEAR_SELECT   = 2013
+SAMPLING_RATE = "50 percent"
 
 QUERY_STATEMENT = paste("SELECT
                         [Year]
@@ -49,7 +50,7 @@ QUERY_STATEMENT = paste("SELECT
 # 2.  Search Windows ODBC --> 'Set up data sources (ODBC)
 # 3.  Add ODBC Driver 11 for SQL Server connection, name connection "Clipper Alpha"
 
-connection <- odbcConnect("Clipper Alpha", uid = "XXXX", pwd = "XXXXX")
+connection <- odbcConnect("Clipper Alpha", uid = "XXX", pwd = "XXX")
 df_raw <- sqlQuery(connection, QUERY_STATEMENT)
 
 odbcCloseAll()
@@ -71,6 +72,11 @@ date_info <- working_date %>%
   mutate(Month_Name = month.name[Month])
 
 head(date_info, n = 31)
+
+# Process data: create a small database of transactions by operator by day
+operator_counts <- df_raw %>%
+  group_by(Year, Month, CircadianDayOfWeek, RandomWeekID, AgencyName) %>%
+  summarise(Sampled_Transactions = n())
 
 # Process data: Create data set to extract A and B from
 working.for_A_and_B <- df_raw %>%
@@ -113,5 +119,6 @@ working.output <- working.join %>%
 # Write data to disk
 working.output <- left_join(working.output, date_info, by = "DayID")
 # write.csv(working.output, paste(YEAR_SELECT,"-",MONTH_SELECT,"Transfer Database for Random Weekdays.csv"), row.names = FALSE, quote = T)
-save(working.output, file = paste(YEAR_SELECT,"-",MONTH_SELECT,"Transfer Database for Random Weekdays.RData"))
+save(working.output,  file = paste(YEAR_SELECT,"-",MONTH_SELECT,"-", SAMPLING_RATE,"Transfer Database for Random Weekdays.RData"))
+save(operator_counts, file = paste(YEAR_SELECT,"-",MONTH_SELECT,"-", SAMPLING_RATE,"Transaction Database for Random Weekdays.RData"))
 

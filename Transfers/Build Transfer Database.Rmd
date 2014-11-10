@@ -18,9 +18,11 @@ The anonymous Clipper data is potentially an excellent source for quantifying op
 4.  Use charts to infer break points (top 10?)
 6.  Build out input data base
 7.  Build data set with both way transfers using data points
+8.  Data set should have sampled transfers, estimated transfers, and transfer shares (or operator boarding to compute it)
 8.  Add-in data for more months
 
-```{r overhead, echo=FALSE}
+#### Overhead
+```{r overhead}
 library(knitr)
 library(stringr)
 library(ggplot2)
@@ -31,27 +33,62 @@ suppressMessages(library(dplyr))
 knitr::opts_chunk$set(cache=TRUE)
 ```
 
+#### Parameters
+```{r parameters}
+SAMPLING_RATE = 0.50
+```
+
 ## Data reads
 ```{r data-reads}
-# Clipper extracts
-load("M:/Data/Clipper/Transfers/From Anonymous/2013 - 3 Transfer Database for Random Weekdays.RData")
-data_03_may_2013 <- working.output
 
-load("M:/Data/Clipper/Transfers/From Anonymous/2013 - 4 Transfer Database for Random Weekdays.RData")
-data_04_apr_2013 <- working.output
+# Clipper transfer and transaction extracts
+# ~ 2013 March
+load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2013 - 3 - 50 percent Transfer Database for Random Weekdays.RData")
+data_03_mar_2013_transfers <- working.output
+
+load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2013 - 3 - 50 percent Transaction Database for Random Weekdays.RData")
+data_03_mar_2013_transactions <- operator_counts
+
+# ~ 2013 April
+load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2013 - 4 - 50 percent Transfer Database for Random Weekdays.RData")
+data_04_apr_2013_transfers <- working.output
+
+load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2013 - 4 - 50 percent Transaction Database for Random Weekdays.RData")
+data_04_apr_2013_transactions <- operator_counts
+
+load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2013 - 5 - 50 percent Transfer Database for Random Weekdays.RData")
+data_05_may_2013_transfers <- working.output
+
+load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2013 - 5 - 50 percent Transaction Database for Random Weekdays.RData")
+data_05_may_2013_transactions <- operator_counts
 
 # Combine
-working <- rbind(data_03_may_2013, data_04_apr_2013)
+working.transfers    <- rbind(data_03_mar_2013_transfers,
+                              data_04_apr_2013_transfers,    
+                              data_05_may_2013_transfers)
+
+working.transactions <- rbind(data_03_mar_2013_transactions, 
+                              data_04_apr_2013_transactions, 
+                              data_05_may_2013_transactions)
 
 # Transfer rules
 transfer.rules <- read.table(file = "transfer_rules_database.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
 
+# Clean up
+remove(data_03_mar_2013_transfers,
+       data_04_apr_2013_transfers,
+       data_05_may_2013_transfers,
+       data_03_mar_2013_transactions,
+       data_04_apr_2013_transactions,
+       data_05_may_2013_transactions)
+
 ```
 
 ## Processing
-```{r data-processing}
+```{r data-processing-transfers}
 
-typical.weekday <- working %>%
+# Summarise the transfers for typical weekdays
+typical.weekday <- working.transfers %>%
   mutate(from_AgencyName = str_trim(from_AgencyName)) %>%
   mutate(to_AgencyName   = str_trim(to_AgencyName)) %>%
   filter(CircadianDayOfWeek > 2) %>%
@@ -65,12 +102,31 @@ transfer.sum <- transfer.data %>%
   filter(key_time <= max_time) %>%
   select(-key_time, -max_time) %>%
   group_by(Year, Month, CircadianDayOfWeek, RandomWeekID, from_AgencyName, to_AgencyName) %>%
-  summarise(transfers = n())
+  summarise(sampled_transfers = n())
 
+# Join the transactions
+working.transactions <- working.transactions %>%
+  mutate(AgencyName = str_trim(AgencyName))
+
+from_transactions <- working.transactions %>%
+  select(from_AgencyName = AgencyName, from_Agency_Sampled_Transactions = Sampled_Transactions, Year, Month, CircadianDayOfWeek, RandomWeekID)
+
+to_transactions <- working.transactions %>%
+  select(  to_AgencyName = AgencyName,   to_Agency_Sampled_Transactions = Sampled_Transactions, Year, Month, CircadianDayOfWeek, RandomWeekID)
+
+transfer.write <- left_join(transfer.sum,   from_transactions, by = c("Year", "Month", "CircadianDayOfWeek", "RandomWeekID", "from_AgencyName"))
+transfer.write <- left_join(transfer.write, to_transactions,   by = c("Year", "Month", "CircadianDayOfWeek", "RandomWeekID", "to_AgencyName"))
+
+# Estimate transfers & tranactions using the sample rate
+transfer.write <- transfer.write %>%
+  mutate(estimated_transfers = sampled_transfers / SAMPLING_RATE) %>%
+  mutate(estimated_from_agency_transactions = from_Agency_Sampled_Transactions / SAMPLING_RATE) %>% 
+  mutate(estimated_to_agency_transactions   = to_Agency_Sampled_Transactions   / SAMPLING_RATE) 
+  
 ```
 
 ## Write to disk
 ```{r writes}
-write.csv(transfer.sum, "M:/Data/Clipper/Transfers/From Anonymous/Transfers by day by agency pair.csv", row.names = FALSE, quote = T)
+write.csv(transfer.write, "M:/Data/Clipper/Transfers/From Anonymous/Transfers by day by agency pair.csv", row.names = FALSE, quote = T)
 ```
 

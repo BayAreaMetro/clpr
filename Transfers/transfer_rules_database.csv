@@ -1,3 +1,11 @@
 from_AgencyName, to_AgencyName, max_time
 'SF Muni','BART',40
+'SF Muni','AC Transit',40
+'SF Muni','SF Muni',40
+'AC Transit','BART',40
+'AC Transit','SF Muni',40
+'AC Transit','AC Transit',40
 'BART','SF Muni',20
+'BART','AC Transit',20
+'BART','BART',20
+

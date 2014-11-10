@@ -27,7 +27,7 @@ knitr::opts_chunk$set(cache=TRUE)
 ## Data reads
 ```{r data-reads}
 # Use May 2013 as prototype
-load("M:/Data/Clipper/Transfers/From Anonymous/2013 - 3 Transfer Database for Random Weekdays.RData")
+load("M:/Data/Clipper/Transfers/From Anonymous/2013 - 3 - 50 percent Transfer Database for Random Weekdays.RData")
 table(working.output$from_AgencyName)
 # data_03_may_2013 <- working.output
 ```
@@ -81,7 +81,7 @@ Make_to_from_plot <- function(transfer_df, a_string, b_string){
   # Plot
   plot <- ggplot(data.to_plot, aes(x = key_time, y = cumulative_median_transfers, colour = movement, group = movement)) + 
     xlab("Time between Tags") + 
-    ylab("Cumulative Transfers") + 
+    ylab("Cumulative Sampled Transfers") + 
     theme(text = element_text(size = 16), axis.title.x = element_text(vjust = -0.5), axis.title.y = element_text(vjust = 2.0), panel.grid.major.x = element_line(colour = "black")) +
     geom_line(size = 2) + 
     ggtitle(paste(a_string,"to/from", b_string))
