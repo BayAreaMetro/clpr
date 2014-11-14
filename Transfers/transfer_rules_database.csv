@@ -2,10 +2,63 @@ from_AgencyName, to_AgencyName, max_time
 'SF Muni','BART',40
 'SF Muni','AC Transit',40
 'SF Muni','SF Muni',40
+'SF Muni','SamTrans',40
+'SF Muni','VTA',40
+'SF Muni','Golden Gate Transit',40
+'SF Muni','Golden Gate Ferry',40
+'SF Muni','WETA',60
 'AC Transit','BART',40
 'AC Transit','SF Muni',40
 'AC Transit','AC Transit',40
+'AC Transit','SamTrans',40
+'AC Transit','VTA',40
+'AC Transit','Golden Gate Transit',60
+'AC Transit','Golden Gate Ferry',60
+'AC Transit','WETA',60
+'SamTrans','BART',40
+'SamTrans','SF Muni',40
+'SamTrans','AC Transit',40
+'SamTrans','SamTrans',40
+'SamTrans','VTA',40
+'SamTrans','Golden Gate Transit',60
+'SamTrans','Golden Gate Ferry',60
+'SamTrans','WETA',60
+'VTA','BART',40
+'VTA','SF Muni',40
+'VTA','AC Transit',40
+'VTA','SamTrans',40
+'VTA','VTA',40
+'VTA','Golden Gate Transit',60
+'VTA','Golden Gate Ferry',60
+'VTA','WETA',60
+'Golden Gate Transit','SF Muni',20
+'Golden Gate Transit','AC Transit',20
+'Golden Gate Transit','SamTrans',20
+'Golden Gate Transit','VTA',20
+'Golden Gate Transit','Golden Gate Transit',10
+'Golden Gate Transit','BART',20
+'Golden Gate Transit','Golden Gate Ferry',20
+'Golden Gate Transit','WETA',20
+'Golden Gate Ferry','SF Muni',70
+'Golden Gate Ferry','AC Transit',70
+'Golden Gate Ferry','SamTrans',70
+'Golden Gate Ferry','VTA',70
+'Golden Gate Ferry','Golden Gate Transit',70
+'Golden Gate Ferry','Golden Gate Ferry',70
+'Golden Gate Ferry','BART',30
+'Golden Gate Ferry','WETA',70
 'BART','SF Muni',20
 'BART','AC Transit',20
-'BART','BART',20
-
+'BART','BART',10
+'BART','SamTrans',20
+'BART','VTA',20
+'BART','Golden Gate Transit',40
+'BART','Golden Gate Ferry',60
+'BART','WETA',40
+'WETA','SF Muni',30
+'WETA','AC Transit',60
+'WETA','SamTrans',60
+'WETA','VTA',60
+'WETA','Golden Gate Transit',60
+'WETA','Golden Gate Ferry',60
+'WETA','BART',40

@@ -73,17 +73,6 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <h4>Purpose</h4>
 <p>The anonymous Clipper data is potentially an excellent source for quantifying operator-to-operator transit movements. Here, we seek to understand transfers in the travel model sense, i.e. a movement between an origin and destination that requires a tranfer between or within transit operators. This definition differs from transfers as defined by certain transit agencies, which generally allow multiple boardings at no or reduced cost during a narrow time window. Here, we implement a set of rules to build a database of transfers. This script uses data derived from the anonymous Clipper data – see <code>Extract Transfer for Random Weekday to CSV.R</code>. Please see <code>To and From Interactive.Rmd</code> for an interactive charting engine of operator pairs.</p>
 </div>
-<div id="issues" class="section level4">
-<h4><em>ISSUES</em></h4>
-</div>
-<div id="todo" class="section level4">
-<h4><em>TODO</em></h4>
-<ol style="list-style-type: decimal">
-<li>Use charts to infer break points (top 10?)</li>
-<li>Build out input data base</li>
-<li>Add-in data for more months</li>
-</ol>
-</div>
 <div id="overhead" class="section level4">
 <h4>Overhead</h4>
 <pre class="r"><code>library(knitr)
@@ -224,6 +213,36 @@ Build_Database(transfers_df, transactions_df, transfer_rules_df, SAMPLING_RATE, 
 transfers_df &lt;- working.output
 
 load(&quot;M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 3 - 50 percent Transaction Database for Random Weekdays.RData&quot;)
+transactions_df &lt;- operator_counts
+
+Build_Database(transfers_df, transactions_df, transfer_rules_df, SAMPLING_RATE, output_file_string, TRUE)</code></pre>
+</div>
+<div id="april-1" class="section level4">
+<h4>2014 April</h4>
+<pre class="r"><code>load(&quot;M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 4 - 50 percent Transfer Database for Random Weekdays.RData&quot;)
+transfers_df &lt;- working.output
+
+load(&quot;M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 4 - 50 percent Transaction Database for Random Weekdays.RData&quot;)
+transactions_df &lt;- operator_counts
+
+Build_Database(transfers_df, transactions_df, transfer_rules_df, SAMPLING_RATE, output_file_string, TRUE)</code></pre>
+</div>
+<div id="may-1" class="section level4">
+<h4>2014 May</h4>
+<pre class="r"><code>load(&quot;M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 5 - 50 percent Transfer Database for Random Weekdays.RData&quot;)
+transfers_df &lt;- working.output
+
+load(&quot;M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 5 - 50 percent Transaction Database for Random Weekdays.RData&quot;)
+transactions_df &lt;- operator_counts
+
+Build_Database(transfers_df, transactions_df, transfer_rules_df, SAMPLING_RATE, output_file_string, TRUE)</code></pre>
+</div>
+<div id="september-1" class="section level4">
+<h4>2014 September</h4>
+<pre class="r"><code>load(&quot;M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 9 - 50 percent Transfer Database for Random Weekdays.RData&quot;)
+transfers_df &lt;- working.output
+
+load(&quot;M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 9 - 50 percent Transaction Database for Random Weekdays.RData&quot;)
 transactions_df &lt;- operator_counts
 
 Build_Database(transfers_df, transactions_df, transfer_rules_df, SAMPLING_RATE, output_file_string, TRUE)</code></pre>

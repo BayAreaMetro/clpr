@@ -11,13 +11,6 @@ output:
 #### Purpose
 The anonymous Clipper data is potentially an excellent source for quantifying operator-to-operator transit movements.  Here, we seek to understand transfers in the travel model sense, i.e. a movement between an origin and destination that requires a tranfer between or within transit operators.  This definition differs from transfers as defined by certain transit agencies, which generally allow multiple boardings at no or reduced cost during a narrow time window.  Here, we implement a set of rules to build a database of transfers.  This script uses data derived from the anonymous Clipper data -- see `Extract Transfer for Random Weekday to CSV.R`.  Please see `To and From Interactive.Rmd` for an interactive charting engine of operator pairs.
 
-#### _ISSUES_
-
-#### _TODO_
-1.  Use charts to infer break points (top 10?)
-2.  Build out input data base
-3.  Add-in data for more months
-
 #### Overhead
 ```{r overhead}
 library(knitr)
@@ -168,6 +161,39 @@ load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 3 - 50 percent Tr
 transfers_df <- working.output
 
 load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 3 - 50 percent Transaction Database for Random Weekdays.RData")
+transactions_df <- operator_counts
+
+Build_Database(transfers_df, transactions_df, transfer_rules_df, SAMPLING_RATE, output_file_string, TRUE)
+```
+
+#### 2014 April
+```{r 2014-april}
+load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 4 - 50 percent Transfer Database for Random Weekdays.RData")
+transfers_df <- working.output
+
+load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 4 - 50 percent Transaction Database for Random Weekdays.RData")
+transactions_df <- operator_counts
+
+Build_Database(transfers_df, transactions_df, transfer_rules_df, SAMPLING_RATE, output_file_string, TRUE)
+```
+
+#### 2014 May
+```{r 2014-may}
+load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 5 - 50 percent Transfer Database for Random Weekdays.RData")
+transfers_df <- working.output
+
+load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 5 - 50 percent Transaction Database for Random Weekdays.RData")
+transactions_df <- operator_counts
+
+Build_Database(transfers_df, transactions_df, transfer_rules_df, SAMPLING_RATE, output_file_string, TRUE)
+```
+
+#### 2014 September
+```{r 2014-september}
+load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 9 - 50 percent Transfer Database for Random Weekdays.RData")
+transfers_df <- working.output
+
+load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 9 - 50 percent Transaction Database for Random Weekdays.RData")
 transactions_df <- operator_counts
 
 Build_Database(transfers_df, transactions_df, transfer_rules_df, SAMPLING_RATE, output_file_string, TRUE)

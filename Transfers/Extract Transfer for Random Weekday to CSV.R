@@ -16,8 +16,8 @@ setwd("M:/Data/Clipper/Transfers/From Anonymous/extracts")
 MAX_TIME = 120
 
 # Extract data a month at a time
-MONTH_SELECT  = 4
-YEAR_SELECT   = 2013
+MONTH_SELECT  = 10
+YEAR_SELECT   = 2014
 SAMPLING_RATE = "50 percent"
 
 QUERY_STATEMENT = paste("SELECT
