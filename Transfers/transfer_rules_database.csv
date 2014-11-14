@@ -7,6 +7,7 @@ from_AgencyName, to_AgencyName, max_time
 'SF Muni','Golden Gate Transit',40
 'SF Muni','Golden Gate Ferry',40
 'SF Muni','WETA',60
+'SF Muni','Caltrain',40
 'AC Transit','BART',40
 'AC Transit','SF Muni',40
 'AC Transit','AC Transit',40
@@ -15,6 +16,7 @@ from_AgencyName, to_AgencyName, max_time
 'AC Transit','Golden Gate Transit',60
 'AC Transit','Golden Gate Ferry',60
 'AC Transit','WETA',60
+'AC Transit','Caltrain',60
 'SamTrans','BART',40
 'SamTrans','SF Muni',40
 'SamTrans','AC Transit',40
@@ -23,6 +25,7 @@ from_AgencyName, to_AgencyName, max_time
 'SamTrans','Golden Gate Transit',60
 'SamTrans','Golden Gate Ferry',60
 'SamTrans','WETA',60
+'SamTrans','Caltrain',60
 'VTA','BART',40
 'VTA','SF Muni',40
 'VTA','AC Transit',40
@@ -31,6 +34,7 @@ from_AgencyName, to_AgencyName, max_time
 'VTA','Golden Gate Transit',60
 'VTA','Golden Gate Ferry',60
 'VTA','WETA',60
+'VTA','Caltrain',60
 'Golden Gate Transit','SF Muni',20
 'Golden Gate Transit','AC Transit',20
 'Golden Gate Transit','SamTrans',20
@@ -39,6 +43,7 @@ from_AgencyName, to_AgencyName, max_time
 'Golden Gate Transit','BART',20
 'Golden Gate Transit','Golden Gate Ferry',20
 'Golden Gate Transit','WETA',20
+'Golden Gate Transit','Caltrain',60
 'Golden Gate Ferry','SF Muni',70
 'Golden Gate Ferry','AC Transit',70
 'Golden Gate Ferry','SamTrans',70
@@ -47,6 +52,7 @@ from_AgencyName, to_AgencyName, max_time
 'Golden Gate Ferry','Golden Gate Ferry',70
 'Golden Gate Ferry','BART',30
 'Golden Gate Ferry','WETA',70
+'Golden Gate Ferry','Caltrain',60
 'BART','SF Muni',20
 'BART','AC Transit',20
 'BART','BART',10
@@ -55,6 +61,7 @@ from_AgencyName, to_AgencyName, max_time
 'BART','Golden Gate Transit',40
 'BART','Golden Gate Ferry',60
 'BART','WETA',40
+'BART','Caltrain',30
 'WETA','SF Muni',30
 'WETA','AC Transit',60
 'WETA','SamTrans',60
@@ -62,3 +69,12 @@ from_AgencyName, to_AgencyName, max_time
 'WETA','Golden Gate Transit',60
 'WETA','Golden Gate Ferry',60
 'WETA','BART',40
+'WETA','Caltrain',60
+'Caltrain','SF Muni',20
+'Caltrain','AC Transit',30
+'Caltrain','SamTrans',30
+'Caltrain','VTA',20
+'Caltrain','Golden Gate Transit',60
+'Caltrain','Golden Gate Ferry',60
+'Caltrain','BART',20
+'Caltrain','WETA',60
