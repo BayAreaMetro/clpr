@@ -29,7 +29,7 @@ SAMPLING_RATE = 0.50
 
 transfer_rules_df <- read.table(file = "transfer_rules_database.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
 
-output_file_string <- "M:/Data/Clipper/Transfers/From Anonymous/Transfers by day by agency pair.csv"
+output_file_string <- "Transfers by day by agency pair.csv"
 ```
 
 ## Processing Method
