@@ -49,4 +49,4 @@ Further background and vignettes (these are in draft form, some may be more usef
 Resulting Data
 ==============
 
-The [resulting data](data-raw/Transfers%20by%20day%20by%20agency%20pair.csv) is summarized in [this Tableau workbook](data-raw/Clipper%20Transfers.twb) [here](http://analytics.mtc.ca.gov/foswiki/Main/ClipperTransfers).
+The [resulting data](data-raw/Transfers%20by%20day%20by%20agency%20pair.csv) is summarized in [this Tableau workbook](data-raw/Clipper%20Transfers.twb).
