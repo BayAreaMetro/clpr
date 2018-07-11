@@ -31,19 +31,19 @@ In this repository, we've moved the scripts and markdown documents around to fit
 Goal
 ====
 
-The main scripts are eponymous. They [extract-data.Rmd](vignettes/extract-data.Rmd), [create interactive pair-wise by tag time difference plots](vignettes/To%20and%20From%20Interactive.Rmd), and [vignettes/build a database of transfer summaries](Build%20Transfer%20Database.Rmd).
+The main scripts are eponymous. They [extract-data](vignettes/extract-data.Rmd), [create interactive pair-wise by tag time difference plots](vignettes/To-and-From-Interactive.Rmd), and [build a database of transfer summaries](vignettes/Build-Transfer-Database.Rmd).
 
 Vignettes/Examples
 ==================
 
 Further background and vignettes (these are in draft form, some may be more useful than others).
 
--   [Alpha Test 01 - Find People for Random Weekday.Rmd](vignettes/Alpha%20Test%2001%20-%20Find%20People%20for%20Random%20Weekday.Rmd)
--   [Alpha Test 01 - Find People.Rmd](vignettes/Alpha%20Test%2001%20-%20Find%20People.Rmd)
--   [Alpha Test 02 - If A and B and C for Random Weekday.Rmd](vignettes/Alpha%20Test%2002%20-%20If%20A%20and%20B%20and%20C%20for%20Random%20Weekday.Rmd)
--   [Alpha Test 02 - If A and B and C.Rmd](vignettes/Alpha%20Test%2002%20-%20If%20A%20and%20B%20and%20C.Rmd)
--   [Build Transfer Database.Rmd](vignettes/Build%20Transfer%20Database.Rmd)
--   [To and From Interactive.Rmd](vignettes/To%20and%20From%20Interactive.Rmd)
+-   [Alpha-Test-01---Find-People-for-Random-Weekday.Rmd](vignettes/AlphaTest01---Find-People-for-Random-Weekday.Rmd)
+-   [Alpha-Test-01---Find-People.Rmd](vignettes/Alpha-Test-01---Find-People.Rmd)
+-   [Alpha-Test-02---If-A-and-B-and-C-for-Random-Weekday.Rmd](vignettes/Alpha-Test-02---If-A-and-B-and-C-for-Random-Weekday.Rmd)
+-   [Alpha-Test-02---If-A-and-B-and-C.Rmd](vignettes/Alpha-Test-02---If-A-and-B-and-C.Rmd)
+-   [Build-Transfer-Database.Rmd](vignettes/Build-Transfer-Database.Rmd)
+-   [To-and-From-Interactive.Rmd](vignettes/To-and-From-Interactive.Rmd)
 -   [extract-data.Rmd](vignettes/extract-data.Rmd)
 
 Resulting Data
