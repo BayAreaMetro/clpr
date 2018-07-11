@@ -5,3 +5,4 @@
 .Rbuildignore
 README.Rmd
 clpr.Rproj
+inst/doc

@@ -1,0 +1,103 @@
+---
+title: "Extraction Examples"
+author: "Tom Buckley"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+
+This is a draft vignette of scripts originally written by David Ory. Please see the Git history for more detail. 
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Extract Sequence by Date to CSV.R
+
+Take a month of data from the anonymized Clipper SQL server table, build transaction sequences for
+each card holder, and push the data to a CSV for analysis in other Alpha test scripts.
+
+note:2014 08 08 dto
+
+```{r, fig.show='hold'}
+suppressMessages(library(dplyr))
+suppressMessages(library(plyr))
+library(odbc)
+library(stringr)
+setwd("M:/Data/Clipper/Alpha Tests/_working")
+
+rs <- dbConnect(odbc::odbc(), "Redshift")
+sequence.freq <- extract_sequence_by_date(rs)
+
+# Write sequence frequency to disk
+write.csv(sequence.freq, file = "Sequence Frequencies by Date.csv", row.names = FALSE, quote = T)
+
+```
+
+## Extract Data by Month and Year
+
+Take some amount of data from the anonymized Clipper SQL server table and push to CSV.
+
+note: 2014 12 05 dto
+
+```{r}
+
+# Overhead
+library(odbc)
+
+# Get command line arguments
+args <- commandArgs(trailingOnly = TRUE)
+
+# Extract data a month at a time
+MONTH_SELECT  = args[1]
+YEAR_SELECT   = args[2]
+
+library(DBI)
+library(dbplyr)
+library(dplyr)
+library(readr)
+
+#connect to dbs
+rs <- dbConnect(odbc::odbc(), "Redshift")
+
+extract_by_month_and_year_query <- read_file("inst/sql/extract_by_month_and_year.sql")
+QUERY_STATEMENT = paste(extract_by_month_and_year_query,MONTH_SELECT,") AND (Year = ",YEAR_SELECT,")")
+df_raw <- sqlQuery(rs, QUERY_STATEMENT)
+
+# Write sequence frequency to disk
+write.csv(df_raw, file = paste(YEAR_SELECT,"-",MONTH_SELECT," Anonymous Clipper Socrata.csv"), row.names = FALSE, quote = T)
+
+odbcCloseAll()
+```
+
+## Extract Sequence for Random Weekday to CSV.R
+
+Take a month of data from the anonymized Clipper SQL server table, build transaction sequences for
+each card holder, and push the data to a CSV for analysis in other Alpha test scripts.  Note that
+this version of the anonmyzed data suppresses the actual date, instead providing a year, month,
+day of week, and week indicator.
+
+note: 2014 08 08 dto
+
+```{r}
+suppressMessages(library(dplyr))
+suppressMessages(library(plyr))
+library(RODBC)
+library(stringr)
+setwd("M:/Data/Clipper/Alpha Tests/_working")
+
+rs <- dbConnect(odbc::odbc(), "Redshift")
+
+sequence.freq.join <- extract_sequence_for_random_week(rs)
+
+# Write sequence frequency to disk
+write.csv(sequence.freq.join, file = "Sequence Frequencies for Random Weekday.csv", row.names = FALSE, quote = T)
+```
