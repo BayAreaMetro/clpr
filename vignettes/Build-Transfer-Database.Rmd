@@ -8,10 +8,25 @@ output:
 ---
 ## Administration
 
+Download the input data. This is for convenience. You can also get it from `M:/Data/Clipper` and set the appropriate data_dir below. 
+
+```{r, eval=FALSE}
+data_dir <- "/Users/tommtc/Data"
+library(boxr)
+box_auth()
+box_fetch(dir_id=51200568211, local_dir = data_dir)
+```
+
+If you didn't download the data, set the data_dir here:
+
+```{r, eval=FALSE}
+data_dir <- "M:/Data/Clipper/Transfers/From Anonymous/extracts/"
+```
+
 #### Purpose
+
 The anonymous Clipper data is potentially an excellent source for quantifying operator-to-operator transit movements.  Here, we seek to understand transfers in the travel model sense, i.e. a movement between an origin and destination that requires a tranfer between or within transit operators.  This definition differs from transfers as defined by certain transit agencies, which generally allow multiple boardings at no or reduced cost during a narrow time window.  Here, we implement a set of rules to build a database of transfers.  This script uses data derived from the anonymous Clipper data -- see `Extract Transfer for Random Weekday to CSV.R`.  Please see `To and From Interactive.Rmd` for an interactive charting engine of operator pairs.
 
-#### Overhead
 ```{r overhead}
 library(knitr)
 library(stringr)
@@ -24,125 +39,19 @@ suppressMessages(library(dplyr))
 knitr::opts_chunk$set(cache=TRUE)
 ```
 
-#### Parameters
-```{r parameters}
+```{r}
+transfer_filenames_df <- arrange(transfer_filenames_df,year,month) 
+```
+
+```{r}
 SAMPLING_RATE = 0.50
 
-transfer_rules_df <- read.table(file = "transfer_rules_database.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
-
 output_file_string <- "Transfers by day by agency pair.csv"
-```
 
-## Churn
-### Year 2013
-#### 2013 March
-```{r 2013-march}
-load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2013 - 3 - 50 percent Transfer Database for Random Weekdays.RData")
-transfers_df <- working.output
-
-load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2013 - 3 - 50 percent Transaction Database for Random Weekdays.RData")
-transactions_df <- operator_counts
-
-Build_Database(transfers_df, transactions_df, transfer_rules_df, SAMPLING_RATE, output_file_string, FALSE)
-```
-
-
-#### 2013 April
-```{r 2013-april}
-load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2013 - 4 - 50 percent Transfer Database for Random Weekdays.RData")
-transfers_df <- working.output
-
-load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2013 - 4 - 50 percent Transaction Database for Random Weekdays.RData")
-transactions_df <- operator_counts
-
-Build_Database(transfers_df, transactions_df, transfer_rules_df, SAMPLING_RATE, output_file_string, TRUE)
-```
-
-#### 2013 May
-```{r 2013-may}
-load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2013 - 5 - 50 percent Transfer Database for Random Weekdays.RData")
-transfers_df <- working.output
-
-load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2013 - 5 - 50 percent Transaction Database for Random Weekdays.RData")
-transactions_df <- operator_counts
-
-Build_Database(transfers_df, transactions_df, transfer_rules_df, SAMPLING_RATE, output_file_string, TRUE)
-```
-
-#### 2013 September
-```{r 2013-september}
-load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2013 - 9 - 50 percent Transfer Database for Random Weekdays.RData")
-transfers_df <- working.output
-
-load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2013 - 9 - 50 percent Transaction Database for Random Weekdays.RData")
-transactions_df <- operator_counts
-
-Build_Database(transfers_df, transactions_df, transfer_rules_df, SAMPLING_RATE, output_file_string, TRUE)
-```
-
-#### 2013 October
-```{r 2013-october}
-load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2013 - 10 - 50 percent Transfer Database for Random Weekdays.RData")
-transfers_df <- working.output
-
-load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2013 - 10 - 50 percent Transaction Database for Random Weekdays.RData")
-transactions_df <- operator_counts
-
-Build_Database(transfers_df, transactions_df, transfer_rules_df, SAMPLING_RATE, output_file_string, TRUE)
-```
-
-#### 2013 November
-```{r 2013-november}
-load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2013 - 11 - 50 percent Transfer Database for Random Weekdays.RData")
-transfers_df <- working.output
-
-load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2013 - 11 - 50 percent Transaction Database for Random Weekdays.RData")
-transactions_df <- operator_counts
-
-Build_Database(transfers_df, transactions_df, transfer_rules_df, SAMPLING_RATE, output_file_string, TRUE)
-```
-
-### Year 2014
-#### 2014 March
-```{r 2014-march}
-load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 3 - 50 percent Transfer Database for Random Weekdays.RData")
-transfers_df <- working.output
-
-load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 3 - 50 percent Transaction Database for Random Weekdays.RData")
-transactions_df <- operator_counts
-
-Build_Database(transfers_df, transactions_df, transfer_rules_df, SAMPLING_RATE, output_file_string, TRUE)
-```
-
-#### 2014 April
-```{r 2014-april}
-load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 4 - 50 percent Transfer Database for Random Weekdays.RData")
-transfers_df <- working.output
-
-load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 4 - 50 percent Transaction Database for Random Weekdays.RData")
-transactions_df <- operator_counts
-
-Build_Database(transfers_df, transactions_df, transfer_rules_df, SAMPLING_RATE, output_file_string, TRUE)
-```
-
-#### 2014 May
-```{r 2014-may}
-load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 5 - 50 percent Transfer Database for Random Weekdays.RData")
-transfers_df <- working.output
-
-load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 5 - 50 percent Transaction Database for Random Weekdays.RData")
-transactions_df <- operator_counts
-
-Build_Database(transfers_df, transactions_df, transfer_rules_df, SAMPLING_RATE, output_file_string, TRUE)
-```
-
-#### 2014 September
-```{r 2014-september}
-load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 9 - 50 percent Transfer Database for Random Weekdays.RData")
-transfers_df <- working.output
-
-load("M:/Data/Clipper/Transfers/From Anonymous/extracts/2014 - 9 - 50 percent Transaction Database for Random Weekdays.RData")
-transactions_df <- operator_counts
-
-Build_Database(transfers_df, transactions_df, transfer_rules_df, SAMPLING_RATE, output_file_string, TRUE)
+r1 <- apply(transfer_filenames_df[1,], 1, function(x) try(Build_Database(x, 
+                                                              data_dir, 
+                                                              transfer_rules_df, 
+                                                              SAMPLING_RATE, 
+                                                              output_file_string, 
+                                                              FALSE)))
 ```

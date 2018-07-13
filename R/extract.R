@@ -1,4 +1,4 @@
-#' importFrom odbc dbClearResult dbDisconnect dbSendQuery
+#' @importFrom odbc dbClearResult dbDisconnect dbSendQuery
 
 extract_sequence_by_date <- function(con){
     extract_sequence_query <- read_file("inst/sql/extract_sequence.sql")
@@ -8,8 +8,8 @@ extract_sequence_by_date <- function(con){
     working <- mutate(df_raw,
                       TagOnDate = as.Date(TagOnTime),
                       CircadianDayOfWeek = weekdays(CircadianDate),
-                      TagOnHour = as.numeric(str_sub(TagOnTime, 12,13)),
-                      TagOnMin  = as.numeric(str_sub(TagOnTime, 15,16)))
+                      TagOnHour = as.numeric(stringr::str_sub(TagOnTime, 12,13)),
+                      TagOnMin  = as.numeric(stringr::str_sub(TagOnTime, 15,16)))
 
     odbc::dbClearResult(df_raw)
     odbc::dbDisconnect(con)
@@ -79,7 +79,7 @@ extract_sequence_by_date <- function(con){
     working.indiv <- select(working.group, ClipperCardID, CircadianDate, CircadianDayOfWeek, RunSequence)
     working.indiv <- working.indiv %.%
       group_by(ClipperCardID, CircadianDate) %.%
-      filter(str_length(RunSequence) == max(str_length(RunSequence)))
+      filter(stringr::str_length(RunSequence) == max(stringr::str_length(RunSequence)))
 
     sequence.freq <- tally(group_by(working.indiv, CircadianDate, RunSequence))
     return(sequence.freq)
@@ -93,7 +93,7 @@ extract_sequence_for_random_week <- function(con){
   # Process data: create unique circadian date ID
   working <- df_raw %.%
     select(-AgencyID, -AgencyName, -PaymentProductID, -PaymentProductName, -TagOnLocationID, -RouteID, -RouteName, -TagOffLocationID) %.%
-    mutate(TagOnHour = as.numeric(str_sub(TagOnTime_Time, 1,2))) %.%
+    mutate(TagOnHour = as.numeric(stringr::str_sub(TagOnTime_Time, 1,2))) %.%
     mutate(DayID = 1000000 * Year + 10000 * Month + 100 * CircadianDayOfWeek + RandomWeekID)
 
   odbc::dbClearResult(df_raw)
@@ -106,10 +106,10 @@ extract_sequence_for_random_week <- function(con){
   day_of_week.name <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
 
   date_info <- date_info %.%
-    mutate(Year               = as.numeric(str_sub(as.character(DayID), 1, 4))) %.%
-    mutate(Month              = as.numeric(str_sub(as.character(DayID), 5, 6))) %.%
-    mutate(CircadianDayOfWeek = as.numeric(str_sub(as.character(DayID), 7, 8))) %.%
-    mutate(RandomWeekID       = as.numeric(str_sub(as.character(DayID), 9, 10))) %.%
+    mutate(Year               = as.numeric(stringr::str_sub(as.character(DayID), 1, 4))) %.%
+    mutate(Month              = as.numeric(stringr::str_sub(as.character(DayID), 5, 6))) %.%
+    mutate(CircadianDayOfWeek = as.numeric(stringr::str_sub(as.character(DayID), 7, 8))) %.%
+    mutate(RandomWeekID       = as.numeric(stringr::str_sub(as.character(DayID), 9, 10))) %.%
     mutate(Month = month.name[Month]) %.%
     mutate(CircadianDayOfWeek = day_of_week.name[CircadianDayOfWeek])
 
@@ -180,7 +180,7 @@ extract_sequence_for_random_week <- function(con){
   working.indiv <- select(working.group, ClipperCardID, DayID, RunSequence)
   working.indiv <- working.indiv %.%
     group_by(ClipperCardID, DayID) %.%
-    filter(str_length(RunSequence) == max(str_length(RunSequence)))
+    filter(stringr::str_length(RunSequence) == max(stringr::str_length(RunSequence)))
 
   sequence.freq <- tally(group_by(working.indiv, DayID, RunSequence))
 
