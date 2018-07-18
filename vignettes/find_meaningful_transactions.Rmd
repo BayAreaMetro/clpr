@@ -1,0 +1,45 @@
+---
+title: "Find Meaningful Transfers"
+output: html_notebook
+---
+
+```{r, eval=FALSE}
+devtools::install_github("ropenscilabs/skimr", ref = "develop")
+install.packages('pander')
+```
+
+```{r}
+od <- origin_destination_route_device_sample
+
+od <- od %>% 
+  group_by(cardid_anony) %>%
+  mutate(count = n())
+
+hist(od$count)
+```
+
+```{r}
+t <- strftime(od$psttime, format="%H:%M:%S")
+xx <- as.POSIXct(t, format="%H:%M:%S")
+
+od$hour <- hour(xx)
+od$minute <- minute(xx)
+```
+
+```{r}
+od <- od %>% 
+  group_by(cardid_anony) %>%
+  mutate(timediff = difftime(psttime, lag(psttime),units="mins"))
+```
+
+```{r}
+od <- od %>%
+  select(cardid_anony, hour, minute, timediff, everything()) %>%
+  arrange(cardid_anony, hour, minute, psttime) %>%
+  mutate()
+```
+
+```{r, eval=FALSE}
+library(googlesheets)
+iris_ss <- gs_new("iris", input = head(iris, 3), trim = TRUE)
+```
