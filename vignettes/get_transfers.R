@@ -18,33 +18,58 @@ l_dfs <- lapply(dates, function(x) {sample_a_day(rs,x,users=1000) %>% as_tibble(
 
 sample_df <- bind_rows(l_dfs)
 
-
 od <- sample_df %>%
-  group_by(cardid_anony) %>%
-  mutate(count = n())
+  group_by(cardid_anony,yday) %>%
+  mutate(transaction_count = n())
 
-hist(od$count)
+od$is_bart <- od$operatorid_tr==4
 
-t <- strftime(od$psttime, format="%H:%M:%S")
-xx <- as.POSIXct(t, format="%H:%M:%S")
-
-od$hour <- hour(xx)
-od$minute <- minute(xx)
+od <- od %>%
+  group_by(cardid_anony,yday,is_bart) %>%
+  mutate(bart_tr_count = n(),
+         tr_count_diff = transaction_count-bart_tr_count)
 
 od <- od %>%
   group_by(cardid_anony) %>%
+  arrange(hour, minute) %>%
   mutate(timediff = abs(difftime(psttime, lag(psttime),units="mins")))
 
 od <- od %>%
-  group_by(cardid_anony) %>%
-  mutate(check1=any(timediff<200),
+  group_by(cardid_anony,yday) %>%
+  mutate(tr_200_min_any=any(timediff<200),
          median_timediff=median(timediff, na.rm=TRUE),
-         check2=any(median_timediff<200))
+         tr_200_min_med=any(median_timediff<200))
+
+meaningful_transfer_vars <- c("cardid_anony","hour","minute",
+                              "yday","wday","month",
+                              "locationname.origin","locationname.destination",
+                              "transferdiscountflag","transaction_count",
+                              "bart_tr_count","tr_count_diff",
+                              "timediff","median_timediff",
+                              "operatorid_tr","participantname",
+                              "tr_200_min_any","tr_200_min_med",
+                              "routename","vehicleid_dvcl",
+                              "installdate","sublocation",
+                              "tripsequencenumber","sequencenumber")
 
 od <- od %>%
-  select(cardid_anony, hour, minute, timediff, locationname.origin,locationname.destination, median_timediff, check1, check2, everything()) %>%
-  arrange(cardid_anony, hour, minute, psttime) %>%
+  select(meaningful_transfer_vars) %>%
+  arrange(cardid_anony, hour, minute) %>%
   mutate()
 
-write_csv(od,"~/Documents/Projects/BAM_github_repos/clpr/clipper_2016_origin_destination_route_device_bigsample.csv")
+bart_rider_ids <- od %>%
+  filter(operatorid_tr==4) %>%
+  pull(cardid_anony)
+
+od_bart <- od %>%
+  filter(cardid_anony %in% bart_rider_ids)
+
+od_bart_potential_transferer_ids <- od_bart %>%
+  filter(transaction_count > 4) %>%
+  pull(cardid_anony)
+
+od_bart_xfer <- od %>%
+  filter(cardid_anony %in% od_bart_potential_transferer_ids)
+
+write_csv(od_bart_xfer,"~/Documents/Projects/BAM_github_repos/clpr/clipper_2016_origin_destination_route_device_training.csv")
 

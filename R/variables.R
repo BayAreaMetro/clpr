@@ -64,3 +64,17 @@ select_vars2 <- c("cardid_anony",
                   "transferoperator",
                   "productcategory",
                   "locationid")
+
+meaningful_transfer_vars <- c("cardid_anony","hour","minute",
+                              "locationname.origin","locationname.destination",
+                              "participantname",
+                              "transferdiscountflag","count",
+                              "timediff","median_timediff",
+                              "check1","check2",
+                              "routename","vehicleid_dvcl",
+                              "installdate","sublocation",
+                              "tripsequencenumber","sequencenumber")
+
+#routeid_dvc is null
+#so is txnrouteid
+

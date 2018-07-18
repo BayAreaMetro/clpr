@@ -71,12 +71,31 @@ devices_for_day <- function(partition_time="10:00:00",
   return(tblname)
 }
 
+#'@importFrom lubridate yday wday ymd
 sample_a_day <- function(rs,date1, users) {
   faretable_name <- fares_for_day(start_date=date1)
   device_table_name <- devices_for_day(start_date=date1)
   all_result_tbl <- all_for_day_sample(rs,faretable_name,device_table_name, users=users)
   human_readable_result_tbl <- make_user_sample_human_readable(rs,all_result_tbl)
+  human_readable_result_tbl <- parse_time(human_readable_result_tbl)
+  ldate <- lubridate::ymd(date1)
+  human_readable_result_tbl$yday <- yday(ldate)
+  human_readable_result_tbl$wday <- wday(ldate)
+  human_readable_result_tbl$month <- month(ldate)
+  return(human_readable_result_tbl)
 }
+
+#'@importFrom lubridate hour minute
+parse_time <- function(df1) {
+  t <- strftime(df1$psttime, format="%H:%M:%S")
+  xx <- as.POSIXct(t, format="%H:%M:%S")
+
+  df1$hour <- hour(xx)
+  df1$minute <- minute(xx)
+  return(df1)
+}
+
+
 
 
 #'@importFrom dplyr pull
