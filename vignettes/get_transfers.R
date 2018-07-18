@@ -41,6 +41,7 @@ od <- od %>%
          transfer_to_not_bart = (is_bart & from_bart & to_not_bart & lead(timediff<120)),
          transfer_from_not_bart = (is_bart & to_bart & from_not_bart & timediff<40))
 
+
 od <- od %>%
   group_by(cardid_anony,yday) %>%
   mutate(tr_200_min_any=any(timediff<200),
