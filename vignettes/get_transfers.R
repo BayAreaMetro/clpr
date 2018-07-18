@@ -32,7 +32,12 @@ od <- od %>%
 od <- od %>%
   group_by(cardid_anony) %>%
   arrange(hour, minute) %>%
-  mutate(timediff = abs(difftime(psttime, lag(psttime),units="mins")))
+  mutate(timediff = abs(difftime(psttime, lag(psttime),units="mins")),
+         operator_change = operatorid_tr==lag(operatorid_tr),
+         frombart = lag(operatorid_tr)==4,
+         tobart = lead(operatorid_tr)==4,
+         change_from_bart = (frombart & operator_change),
+         change_to_bart = (tobart & operator_change))
 
 od <- od %>%
   group_by(cardid_anony,yday) %>%
@@ -42,6 +47,8 @@ od <- od %>%
 
 meaningful_transfer_vars <- c("cardid_anony","hour","minute",
                               "yday","wday","month",
+                              "operator_change","frombart","tobart",
+                              "change_from_bart","change_to_bart",
                               "locationname.origin","locationname.destination",
                               "transferdiscountflag","transaction_count",
                               "bart_tr_count","tr_count_diff",
