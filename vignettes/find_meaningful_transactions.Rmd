@@ -4,13 +4,17 @@ output: html_notebook
 ---
 
 ```{r, eval=FALSE}
-devtools::install_github("ropenscilabs/skimr", ref = "develop")
-install.packages('pander')
+library(readr)
+library(dplyr)
+library(lubridate)
 ```
 
 ```{r}
-od <- origin_destination_route_device_sample
 
+od <- read_csv("origin_destination_route_device_sample.csv")
+```
+
+```{r}
 od <- od %>% 
   group_by(cardid_anony) %>%
   mutate(count = n())
@@ -38,6 +42,24 @@ od <- od %>%
   arrange(cardid_anony, hour, minute, psttime) %>%
   mutate()
 ```
+
+```{r}
+od1 <- od %>% 
+  filter(!is.na(timediff) & timediff<100)
+
+od1$timediff <- as.integer(abs(od1$timediff))
+
+hist(od1$timediff)
+summary(od1$timediff)
+```
+
+```{r}
+od2 <- od1 %>% 
+  filter(timediff<70)
+
+hist(od2$timediff)
+```
+
 
 ```{r, eval=FALSE}
 library(googlesheets)
