@@ -29,15 +29,17 @@ od <- od %>%
   mutate(bart_tr_count = n(),
          tr_count_diff = transaction_count-bart_tr_count)
 
+
 od <- od %>%
   group_by(cardid_anony) %>%
   arrange(hour, minute) %>%
   mutate(timediff = abs(difftime(psttime, lag(psttime),units="mins")),
-         operator_change = operatorid_tr==lag(operatorid_tr),
-         frombart = lag(operatorid_tr)==4,
-         tobart = lead(operatorid_tr)==4,
-         change_from_bart = (frombart & operator_change),
-         change_to_bart = (tobart & operator_change))
+         from_bart = lag(operatorid_tr)==4,
+         to_bart = lead(operatorid_tr)==4,
+         from_not_bart = lag(operatorid_tr)!=4,
+         to_not_bart = lead(operatorid_tr)!=4,
+         transfer_to_not_bart = (is_bart & from_bart & to_not_bart & lead(timediff<120)),
+         transfer_from_not_bart = (is_bart & to_bart & from_not_bart & timediff<40))
 
 od <- od %>%
   group_by(cardid_anony,yday) %>%
@@ -45,10 +47,11 @@ od <- od %>%
          median_timediff=median(timediff, na.rm=TRUE),
          tr_200_min_med=any(median_timediff<200))
 
+
 meaningful_transfer_vars <- c("cardid_anony","hour","minute",
                               "yday","wday","month",
-                              "operator_change","frombart","tobart",
-                              "change_from_bart","change_to_bart",
+                              "transfer_to_not_bart",
+                              "transfer_from_not_bart",
                               "locationname.origin","locationname.destination",
                               "transferdiscountflag","transaction_count",
                               "bart_tr_count","tr_count_diff",
@@ -76,7 +79,10 @@ od_bart_potential_transferer_ids <- od_bart %>%
   pull(cardid_anony)
 
 od_bart_xfer <- od %>%
-  filter(cardid_anony %in% od_bart_potential_transferer_ids)
+  filter(cardid_anony %in% od_bart_potential_transferer_ids) %>%
+  arrange(cardid_anony,yday,hour,minute,transfer_to_not_bart,transfer_from_not_bart)
+
+View(od_bart_xfer)
 
 write_csv(od_bart_xfer,"~/Documents/Projects/BAM_github_repos/clpr/clipper_2016_origin_destination_route_device_training.csv")
 
