@@ -3,7 +3,8 @@
 #'@export
 #'@importFrom dbplyr in_schema
 #'@importFrom dplyr tbl
-descriptive_tables <- function(con){
+descriptive_tables <- function(){
+  con <- connect_rs()
   dl <- list()
   dl$operators <- dplyr::tbl(con, dbplyr::in_schema("ctp",
                                                     "operators"))
@@ -15,70 +16,182 @@ descriptive_tables <- function(con){
 }
 
 #'
-#'@param 
+#'@param
 #'@returns a list of transactions (devices and)
 #'@export
-#'@importFrom dbplyr 
+#'@importFrom dbplyr
 #'@importFrom dplyr tbl
 #'@importFrom readr read_file
 #'@importFrom here here
-partition_fares <- function(con, 
-                            partition_time="10:00:00",
-                            start_date="2016-01-01") {
+fares_for_day <- function(partition_time="10:00:00",
+                          start_date="2016-01-01") {
+  con <- connect_rs()
+
   end_date = as.Date(start_date) + 1
   date_title <- gsub("-", "_",start_date)
-  
-  drop_tbl <- glue::glue('DROP TABLE IF EXISTS "clipper_days"."fares_{date_title}";',date_title = date_title)
-  dbExecute(con, drop_tbl)
-  
+
+  #drop_tbl <- glue::glue('DROP TABLE IF EXISTS "clipper_days"."fares_{date_title}";',date_title = date_title)
+  #dbExecute(con, drop_tbl)
+
   day_tables_sql <- readr::read_file(here::here('inst/sql/day_fares.sql'))
   day_tables_sql <- glue::glue(day_tables_sql,
                                date_title = date_title,
                                start_date = start_date,
                                end_date = end_date,
                                partition_time = partition_time)
-  dbExecute(con, day_tables_sql)
-  
+  result = tryCatch({
+    dbExecute(con, day_tables_sql)
+  }, error = function(e) {
+    print(e)
+  })
+
   tblname <- paste0("fares_",date_title)
   return(tblname)
 }
 
-partition_devices <- function(con, 
-                              partition_time="10:00:00",
+devices_for_day <- function(partition_time="10:00:00",
                               start_date="2016-01-01") {
-  end_date = as.Date(start_date) + days(1)
+  con <- connect_rs()
+  end_date = as.Date(start_date) + 1
   date_title <- gsub("-", "_",start_date)
-  
-  drop_tbl <- glue::glue('DROP TABLE IF EXISTS "clipper_days"."devices_{date_title}";',date_title = date_title)
-  dbExecute(con, drop_tbl)
-  
+  tblname <- paste0("devices_",date_title)
+
+  #drop_tbl <- glue::glue('DROP TABLE IF EXISTS "clipper_days"."devices_{date_title}";',date_title = date_title)
+  #dbExecute(con, drop_tbl)
+
   day_tables_sql <- readr::read_file(here::here('inst/sql/day_devices.sql'))
   day_tables_sql <- glue::glue(day_tables_sql,
                                date_title = date_title,
                                start_date = start_date,
                                end_date = end_date)
-  dbExecute(con, day_tables_sql)
-  tblname <- paste0("devices_",date_title)
+  result = tryCatch({
+    dbExecute(con, day_tables_sql)
+  }, error = function(e) {
+  })
   return(tblname)
 }
 
+sample_a_day <- function(rs,date1, users=40) {
+  faretable_name <- fares_for_day(start_date=date1)
+  device_table_name <- devices_for_day(start_date=date1)
+  all_result_tbl <- all_for_day_sample(rs,faretable_name,device_table_name, users=users)
+  human_readable_result_tbl <- make_user_sample_human_readable(rs,all_result_tbl)
+}
+
+
 #'@importFrom dplyr pull
-sample_users <- function(con,faretable_name,n=100) {
-  transactions_day <- dplyr::tbl(rs, dbplyr::in_schema("clipper_days",faretable_name))
-  
-  card_ids <- transactions_day %>% 
+sample_user_ids <- function(transactions_day, n=100) {
+  card_ids <- transactions_day %>%
     dplyr::pull(cardid_anony)
   unique_card_ids <- unique(card_ids)
   unique_card_ids_sample <- sample(unique_card_ids, n)
-  
-  transactions_day_user_sample <- transactions_day %>%
-    filter(cardid_anony %in% unique_card_ids_sample) %>%
-    group_by(cardid_anony) %>% 
-    mutate(transactions = n()) %>%
-    as_tibble()  
-  
-  return(transactions_day_user_sample)
+  return(unique_card_ids_sample)
 }
+
+
+all_for_day_sample <- function(rs,faretable_name,device_table_name,users=users) {
+  transactions_day <- dplyr::tbl(rs, dbplyr::in_schema("clipper_days",faretable_name))
+
+  sample_ids <- sample_user_ids(transactions_day, n=40)
+
+  transactions_day_user_sample <- dplyr::tbl(rs, dbplyr::in_schema("clipper_days",faretable_name)) %>%
+    filter(cardid_anony %in% sample_ids)
+
+  devices_day_sample <- tbl(rs,in_schema("clipper_days",device_table_name))
+
+  transactions_simple_devices <- left_join(transactions_day_user_sample,
+                                           devices_day_sample,
+                                           by=c("sequencenumber"=
+                                                  "sequencenumber",
+                                                "generationtime"=
+                                                  "generationtime",
+                                                "deviceserialnumber"=
+                                                  "deviceserialnumber"),
+                                           suffix=c("_tr","_dvc"))
+
+  device_locations <- tbl(rs,in_schema("clipper","devicelocations")) %>%
+    select(installdate,modelid,vehicleid,placeid,locationname,sublocation,deviceid) %>%
+    rename(vehicleid_dvcl = vehicleid)
+
+  recent_device_locations <- device_locations %>%
+    group_by(deviceid) %>% filter(installdate < "2017-01-01") %>%
+    top_n(1,installdate)
+
+  transactions_simple_devices_locations <- left_join(transactions_simple_devices,
+                                                     recent_device_locations,
+                                                     by=c("deviceserialnumber"=
+                                                            "deviceid"),
+                                                     suffix=c("","_dvcl"))
+
+  return(transactions_simple_devices_locations)
+}
+
+make_user_sample_human_readable <- function(rs,user_sample_tbl) {
+  tr2 <- user_sample_tbl %>% select(select_vars1)
+  tr2 <- tr2 %>% rename("locationname.device"="locationname")
+
+  participants <- tbl(rs, in_schema("clipper","participants"))
+  routes <- tbl(rs, in_schema("clipper","routes"))
+  locations <- tbl(rs, in_schema("clipper","locations"))
+
+  transactions_simple <- tr2
+
+  transactions_simple_tbl <- as_tibble(transactions_simple)
+
+  transactions_simple_tbl$destinationlocation <- as.integer(transactions_simple_tbl$destinationlocation)
+  transactions_simple_tbl$originlocation <- as.integer(transactions_simple_tbl$originlocation)
+
+  participants_simple <- participants %>%
+    select(participantid,participantname) %>%
+    as_tibble()
+
+  tr0 <- left_join(transactions_simple_tbl,
+                   participants_simple,
+                   by=c("operatorid_tr"=
+                          "participantid"),
+                   copy=TRUE)
+
+
+  tr1 <- left_join(tr0,
+                   participants_simple,
+                   by=c("transferoperator"=
+                          "participantid"),
+                   suffix=c('','.transfer'))
+
+  routes_simple <- routes %>%
+    select(routeid,participantid,routename) %>%
+    as_tibble()
+
+  tr2 <- left_join(tr1,
+                   routes_simple,
+                   by=c("operatorid_tr"=
+                          "participantid",
+                        "routeid_tr"=
+                          "routeid"))
+
+  locations_simple <- locations %>%
+    select(locationcode,participantid,locationname) %>%
+    as_tibble()
+
+  tr3 <- left_join(tr2,
+                   locations_simple,
+                   by=c("originlocation"=
+                          "locationcode",
+                        "operatorid_tr"=
+                          "participantid")) %>%
+    rename("locationname.origin"="locationname")
+
+  tr4 <- left_join(tr3,
+                   locations_simple,
+                   by=c("destinationlocation"=
+                          "locationcode",
+                        "operatorid_tr"=
+                          "participantid")) %>%
+    rename("locationname.destination"="locationname") %>%
+    select(select_vars2)
+  return(tr4)
+}
+
 
 
 #' @importFrom odbc dbClearResult dbDisconnect dbSendQuery
@@ -157,13 +270,13 @@ extract_sequence_by_date <- function(con){
     mutate(RunSequence = ifelse(!is.na(lag(ClipperCardID, n =48)) & ClipperCardID == lag(ClipperCardID, n =48), paste(lag(RecordSequence, n =48), RunSequence), RunSequence)) %.%
     mutate(RunSequence = ifelse(!is.na(lag(ClipperCardID, n =49)) & ClipperCardID == lag(ClipperCardID, n =49), paste(lag(RecordSequence, n =49), RunSequence), RunSequence)) %.%
     mutate(RunSequence = ifelse(!is.na(lag(ClipperCardID, n =50)) & ClipperCardID == lag(ClipperCardID, n =50), paste(lag(RecordSequence, n =50), RunSequence), RunSequence))
-  
+
   # Process data: extract a data set that has movements for each CardID for each CircadianDate
   working.indiv <- select(working.group, ClipperCardID, CircadianDate, CircadianDayOfWeek, RunSequence)
   working.indiv <- working.indiv %.%
     group_by(ClipperCardID, CircadianDate) %.%
     filter(stringr::str_length(RunSequence) == max(stringr::str_length(RunSequence)))
-  
+
   sequence.freq <- tally(group_by(working.indiv, CircadianDate, RunSequence))
   return(sequence.freq)
 }
