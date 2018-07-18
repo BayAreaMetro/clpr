@@ -29,7 +29,6 @@ od <- od %>%
   mutate(bart_tr_count = n(),
          tr_count_diff = transaction_count-bart_tr_count)
 
-
 od <- od %>%
   group_by(cardid_anony) %>%
   arrange(hour, minute) %>%
@@ -38,27 +37,36 @@ od <- od %>%
          to_bart = lead(operatorid_tr)==4,
          from_not_bart = lag(operatorid_tr)!=4,
          to_not_bart = lead(operatorid_tr)!=4,
-         transfer_to_not_bart = (is_bart & from_bart & to_not_bart & lead(timediff<120)),
-         transfer_from_not_bart = (is_bart & to_bart & from_not_bart & timediff<40))
-
+         transfer_to_not_bart = (is_bart & from_bart & to_not_bart & lead(timediff<40)),
+         transfer_from_not_bart = (is_bart & to_bart & from_not_bart & timediff<120),
+         transfer_from_operator = lag(participantname),
+         transfer_to_operator = lead(participantname),
+         transfer_from_operator_time = timediff,
+         transfer_to_operator_time = lead(timediff),
+         transfer_from_route = lag(routename),
+         transfer_to_route = lead(routename))
 
 od <- od %>%
-  group_by(cardid_anony,yday) %>%
-  mutate(tr_200_min_any=any(timediff<200),
-         median_timediff=median(timediff, na.rm=TRUE),
-         tr_200_min_med=any(median_timediff<200))
-
+  group_by(cardid_anony) %>%
+  arrange(hour, minute) %>%
+  mutate(transfer_from_operator=case_when(from_bart ~ lag(transfer_from_operator)),
+         transfer_from_route=case_when(from_bart ~ lag(transfer_from_route)))
 
 meaningful_transfer_vars <- c("cardid_anony","hour","minute",
                               "yday","wday","month",
+                              "is_bart","transfer_from_route",
+                              "transfer_to_route",
                               "transfer_to_not_bart",
                               "transfer_from_not_bart",
                               "locationname.origin","locationname.destination",
+                              "transfer_to_operator",
+                              "transfer_from_operator",
+                              "transfer_from_operator_time",
+                              "transfer_to_operator_time",
                               "transferdiscountflag","transaction_count",
                               "bart_tr_count","tr_count_diff",
-                              "timediff","median_timediff",
+                              "timediff",
                               "operatorid_tr","participantname",
-                              "tr_200_min_any","tr_200_min_med",
                               "routename","vehicleid_dvcl",
                               "installdate","sublocation",
                               "tripsequencenumber","sequencenumber")
@@ -83,7 +91,22 @@ od_bart_xfer <- od %>%
   filter(cardid_anony %in% od_bart_potential_transferer_ids) %>%
   arrange(cardid_anony,yday,hour,minute,transfer_to_not_bart,transfer_from_not_bart)
 
-View(od_bart_xfer)
+#View(od_bart_xfer)
+bart_xfer_only <- od_bart_xfer[od_bart_xfer$is_bart & !is.na(od_bart_xfer$locationname.destination),]
+
+meaningful_transfer_vars2 <- c("cardid_anony","hour","minute",
+                              "yday","wday","month",
+                              "locationname.origin","locationname.destination",
+                              "transfer_to_operator","transfer_from_route",
+                              "transfer_to_route",
+                              "transfer_from_operator",
+                              "transfer_from_operator_time",
+                              "transfer_to_operator_time",
+                              "transferdiscountflag",
+                              "transaction_count",
+                              "bart_tr_count","tr_count_diff")
+
+bart_xfer_only <- bart_xfer_only %>% select(meaningful_transfer_vars2)
 
 write_csv(od_bart_xfer,"~/Documents/Projects/BAM_github_repos/clpr/clipper_2016_origin_destination_route_device_training.csv")
 
