@@ -71,7 +71,7 @@ devices_for_day <- function(partition_time="10:00:00",
   return(tblname)
 }
 
-sample_a_day <- function(rs,date1, users=40) {
+sample_a_day <- function(rs,date1, users) {
   faretable_name <- fares_for_day(start_date=date1)
   device_table_name <- devices_for_day(start_date=date1)
   all_result_tbl <- all_for_day_sample(rs,faretable_name,device_table_name, users=users)
@@ -80,7 +80,7 @@ sample_a_day <- function(rs,date1, users=40) {
 
 
 #'@importFrom dplyr pull
-sample_user_ids <- function(transactions_day, n=100) {
+sample_user_ids <- function(transactions_day, n) {
   card_ids <- transactions_day %>%
     dplyr::pull(cardid_anony)
   unique_card_ids <- unique(card_ids)
@@ -92,7 +92,7 @@ sample_user_ids <- function(transactions_day, n=100) {
 all_for_day_sample <- function(rs,faretable_name,device_table_name,users=users) {
   transactions_day <- dplyr::tbl(rs, dbplyr::in_schema("clipper_days",faretable_name))
 
-  sample_ids <- sample_user_ids(transactions_day, n=40)
+  sample_ids <- sample_user_ids(transactions_day, n=users)
 
   transactions_day_user_sample <- dplyr::tbl(rs, dbplyr::in_schema("clipper_days",faretable_name)) %>%
     filter(cardid_anony %in% sample_ids)

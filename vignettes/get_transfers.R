@@ -10,11 +10,11 @@ library(lubridate)
 start <- as.Date("01-01-16",format="%m-%d-%y")
 end   <- as.Date("03-31-16",format="%m-%d-%y")
 
-dates <- sample(seq(start, end, by="day"),30)
+dates <- sample(seq(start, end, by="day"),1)
 
 rs <- connect_rs()
 
-l_dfs <- lapply(dates, function(x) {sample_a_day(rs,x,users=5000) %>% as_tibble()})
+l_dfs <- lapply(dates, function(x) {sample_a_day(rs,x,users=1000) %>% as_tibble()})
 
 sample_df <- bind_rows(l_dfs)
 
@@ -46,5 +46,5 @@ od <- od %>%
   arrange(cardid_anony, hour, minute, psttime) %>%
   mutate()
 
-write_csv(od1,"~/Documents/Projects/BAM_github_repos/clpr/clipper_2016_origin_destination_route_device_sample.csv")
+write_csv(od,"~/Documents/Projects/BAM_github_repos/clpr/clipper_2016_origin_destination_route_device_bigsample.csv")
 
