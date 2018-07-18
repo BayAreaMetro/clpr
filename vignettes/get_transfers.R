@@ -37,14 +37,14 @@ od <- od %>%
          to_bart = lead(operatorid_tr)==4,
          from_not_bart = lag(operatorid_tr)!=4,
          to_not_bart = lead(operatorid_tr)!=4,
-         transfer_to_not_bart = (is_bart & from_bart & to_not_bart & lead(timediff<40)),
+         transfer_to_not_bart = (is_bart & from_bart & to_not_bart & lead(timediff<60)),
          transfer_from_not_bart = (is_bart & to_bart & from_not_bart & timediff<120),
-         transfer_from_operator = lag(participantname),
-         transfer_to_operator = lead(participantname),
-         transfer_from_operator_time = timediff,
-         transfer_to_operator_time = lead(timediff),
-         transfer_from_route = lag(routename),
-         transfer_to_route = lead(routename))
+         transfer_from_operator = case_when(transfer_from_not_bart ~ lag(participantname)),
+         transfer_to_operator = case_when(transfer_to_not_bart ~ lead(participantname)),
+         transfer_from_operator_time = case_when(transfer_from_not_bart ~ timediff),
+         transfer_to_operator_time = case_when(transfer_to_not_bart ~ lead(timediff)),
+         transfer_from_route = case_when(transfer_from_not_bart ~ lag(routename)),
+         transfer_to_route = case_when(transfer_to_not_bart ~ lead(routename))
 
 od <- od %>%
   group_by(cardid_anony) %>%
