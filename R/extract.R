@@ -86,23 +86,23 @@ sample_users <- function(con,faretable_name,n=100) {
 extract_sequence_by_date <- function(con){
   extract_sequence_query <- read_file("inst/sql/extract_sequence.sql")
   df_raw <- odbc::dbSendQuery(con,extract_sequence_query)
-  
+
   # Process data: add date and time variables
   working <- mutate(df_raw,
                     TagOnDate = as.Date(TagOnTime),
                     CircadianDayOfWeek = weekdays(CircadianDate),
                     TagOnHour = as.numeric(stringr::str_sub(TagOnTime, 12,13)),
                     TagOnMin  = as.numeric(stringr::str_sub(TagOnTime, 15,16)))
-  
+
   odbc::dbClearResult(df_raw)
   odbc::dbDisconnect(con)
-  
+
   # Process data: use lags to build a running sequence of movements (monitor and then manually update the max lag)
   working <- mutate(working, RecordSequence = paste(TagOnHour, TagOnLocationName, TagOffLocationName))
   working <- select(working, ClipperCardID, CircadianDate, CircadianDayOfWeek, TagOnDate, TagOnHour, TagOnMin, RecordSequence)
-  
+
   lags_needed <- max((tally(group_by(working, ClipperCardID, CircadianDate)))$n, na.rm = TRUE)
-  
+
   # TODO: Can we make this more elegant?
   working.group <- working %.%
     arrange(CircadianDate, ClipperCardID, TagOnDate, TagOnHour, TagOnMin) %.%
@@ -172,22 +172,22 @@ extract_sequence_by_date <- function(con){
 extract_sequence_for_random_week <- function(con){
   extract_sequence_random_week_sql_query <- read_file("inst/sql/extract_sequence_random_week_sql_query.sql")
   df_raw <- sqlQuery(connection,extract_sequence_random_week_sql_query)
-  
+
   # Process data: create unique circadian date ID
   working <- df_raw %.%
     select(-AgencyID, -AgencyName, -PaymentProductID, -PaymentProductName, -TagOnLocationID, -RouteID, -RouteName, -TagOffLocationID) %.%
     mutate(TagOnHour = as.numeric(stringr::str_sub(TagOnTime_Time, 1,2))) %.%
     mutate(DayID = 1000000 * Year + 10000 * Month + 100 * CircadianDayOfWeek + RandomWeekID)
-  
+
   odbc::dbClearResult(df_raw)
   odbc::dbDisconnect(con)
-  
+
   # Process data: keep the data ideas with the year, month, etc
   date_info <- as.data.frame(unique(working$DayID))
   names(date_info)[names(date_info)=="unique(working$DayID)"] <- "DayID"
-  
+
   day_of_week.name <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
-  
+
   date_info <- date_info %.%
     mutate(Year               = as.numeric(stringr::str_sub(as.character(DayID), 1, 4))) %.%
     mutate(Month              = as.numeric(stringr::str_sub(as.character(DayID), 5, 6))) %.%
@@ -195,15 +195,15 @@ extract_sequence_for_random_week <- function(con){
     mutate(RandomWeekID       = as.numeric(stringr::str_sub(as.character(DayID), 9, 10))) %.%
     mutate(Month = month.name[Month]) %.%
     mutate(CircadianDayOfWeek = day_of_week.name[CircadianDayOfWeek])
-  
+
   table(date_info$CircadianDayOfWeek)
-  
+
   # Process data: use lags to build a running sequence of movements (monitor and then manually update the max lag)
   working <- mutate(working, RecordSequence = paste(TagOnHour, TagOnLocationName, TagOffLocationName))
   working <- select(working, ClipperCardID, DayID, TagOnHour, TripSequenceID, RecordSequence)
-  
+
   lags_needed <- max((tally(group_by(working, ClipperCardID, DayID)))$n, na.rm = TRUE)
-  
+
   # TODO: Can we make this more elegant?
   working.group <- working %.%
     arrange(DayID, ClipperCardID, TripSequenceID) %.%
@@ -258,16 +258,16 @@ extract_sequence_for_random_week <- function(con){
     mutate(RunSequence = ifelse(!is.na(lag(ClipperCardID, n =48)) & ClipperCardID == lag(ClipperCardID, n =48), paste(lag(RecordSequence, n =48), RunSequence), RunSequence)) %.%
     mutate(RunSequence = ifelse(!is.na(lag(ClipperCardID, n =49)) & ClipperCardID == lag(ClipperCardID, n =49), paste(lag(RecordSequence, n =49), RunSequence), RunSequence)) %.%
     mutate(RunSequence = ifelse(!is.na(lag(ClipperCardID, n =50)) & ClipperCardID == lag(ClipperCardID, n =50), paste(lag(RecordSequence, n =50), RunSequence), RunSequence))
-  
+
   # Process data: extract a data set that has movements for each CardID for each CircadianDate
   working.indiv <- select(working.group, ClipperCardID, DayID, RunSequence)
   working.indiv <- working.indiv %.%
     group_by(ClipperCardID, DayID) %.%
     filter(stringr::str_length(RunSequence) == max(stringr::str_length(RunSequence)))
-  
+
   sequence.freq <- tally(group_by(working.indiv, DayID, RunSequence))
-  
+
   sequence.freq.join <- left_join(sequence.freq, date_info, by = "DayID")
-  
+
   return(sequence.freq.join)
 }
