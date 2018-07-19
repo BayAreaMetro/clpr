@@ -24,14 +24,17 @@ descriptive_tables <- function(){
 #'@importFrom readr read_file
 #'@importFrom here here
 fares_for_day <- function(partition_time="10:00:00",
-                          start_date="2016-01-01") {
+                          start_date="2016-01-01",
+                          drop_existing_table=FALSE) {
   con <- connect_rs()
 
   end_date = as.Date(start_date) + 1
   date_title <- gsub("-", "_",start_date)
 
-  #drop_tbl <- glue::glue('DROP TABLE IF EXISTS "clipper_days"."fares_{date_title}";',date_title = date_title)
-  #dbExecute(con, drop_tbl)
+  if(drop_existing_table==TRUE){
+    drop_tbl <- glue::glue('DROP TABLE IF EXISTS "clipper_days"."fares_{date_title}";',date_title = date_title)
+    dbExecute(con, drop_tbl)
+  }
 
   day_tables_sql <- readr::read_file(here::here('inst/sql/day_fares.sql'))
   day_tables_sql <- glue::glue(day_tables_sql,
@@ -50,14 +53,17 @@ fares_for_day <- function(partition_time="10:00:00",
 }
 
 devices_for_day <- function(partition_time="10:00:00",
-                              start_date="2016-01-01") {
+                            start_date="2016-01-01",
+                            drop_existing_table=FALSE) {
   con <- connect_rs()
   end_date = as.Date(start_date) + 1
   date_title <- gsub("-", "_",start_date)
   tblname <- paste0("devices_",date_title)
 
-  #drop_tbl <- glue::glue('DROP TABLE IF EXISTS "clipper_days"."devices_{date_title}";',date_title = date_title)
-  #dbExecute(con, drop_tbl)
+  if(drop_existing_table==TRUE){
+    drop_tbl <- glue::glue('DROP TABLE IF EXISTS "clipper_days"."devices_{date_title}";',date_title = date_title)
+    dbExecute(con, drop_tbl)
+  }
 
   day_tables_sql <- readr::read_file(here::here('inst/sql/day_devices.sql'))
   day_tables_sql <- glue::glue(day_tables_sql,

@@ -16,14 +16,14 @@ source("~/.keys/rs.R")
 rs <- connect_rs()
 
 l_dfs <- lapply(dates[1], function(x) {
-    sample_day_of_transactions(rs,x,n_users=100) %>%
+    sample_day_of_transactions(rs,x,n_users=1000) %>%
     as_tibble() %>%
     mutate(date=x)
   })
 
 sample_df <- bind_rows(l_dfs)
 
-df1 <- parse_time(sample_df)
+df1 <- parse_clipper_time(sample_df)
 
 bart_od <- bart_transactions_as_transfers(df1)
 

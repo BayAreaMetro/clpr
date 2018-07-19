@@ -23,12 +23,12 @@ bart_lag_and_lead_metadata <- function(tr_df) {
       group_by(cardid_anony) %>%
       arrange(hour, minute) %>%
       mutate(timediff = abs(difftime(psttime, lag(psttime),units="mins")),
-             transfer_to_not_bart = (exit_to_not_bart & lead(timediff<60)),
-             transfer_from_not_bart = (entrance_from_not_bart & timediff<120),
+             transfer_from_time = round(timediff,2),
+             transfer_to_operator_time = round(lead(timediff),2),
+             transfer_to_not_bart = (exit_to_not_bart & transfer_to_operator_time<60),
+             transfer_from_not_bart = (entrance_from_not_bart & transfer_from_time<120),
              transfer_from_operator = case_when(transfer_from_not_bart ~ lag(participantname)),
              transfer_to_operator = case_when(transfer_to_not_bart ~ lead(participantname)),
-             transfer_from_operator_time = case_when(transfer_from_not_bart ~ round(timediff,2)),
-             transfer_to_operator_time = case_when(transfer_to_not_bart ~ round(lead(timediff),2)),
              transfer_from_route = case_when(transfer_from_not_bart ~ lag(routename)),
              transfer_to_route = case_when(transfer_to_not_bart ~ lead(routename)))
 
@@ -39,7 +39,8 @@ bart_lag_and_lead_metadata <- function(tr_df) {
       group_by(cardid_anony) %>%
       arrange(hour, minute) %>%
       mutate(transfer_from_operator=case_when(from_bart ~ lag(transfer_from_operator)),
-             transfer_from_route=case_when(from_bart ~ lag(transfer_from_route)))
+             transfer_from_route=case_when(from_bart ~ lag(transfer_from_route)),
+             transfer_from_operator_time = case_when(from_bart ~ lag(transfer_from_time)))
     return(tr_df)
 }
 

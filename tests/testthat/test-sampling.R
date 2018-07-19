@@ -36,4 +36,31 @@ test_that("we parse time on transactions", {
 })
 
 
+test_that("we parse BART transfers OK", {
+  date1 <- as.Date("01-01-16",format="%m-%d-%y")
+  rs <- connect_rs()
+  tbl1 <- sample_day_of_transactions(rs,date1,n_users=1000)
+  df1 <- tbl1 %>% as_tibble() %>% mutate(date=date1)
+  df1 <- parse_clipper_time(df1)
+
+  bart_od <- bart_transactions_as_transfers(df1)
+
+  bart_od_check <- bart_od %>%
+    filter((!is.na(transfer_to_operator) | !is.na(transfer_from_operator))) %>%
+    head(n=1)
+
+  checkid <- bart_od_check %>%
+    pull(cardid_anony)
+
+  operator_ids <- df1 %>%
+    filter(cardid_anony==checkid) %>%
+    pull(operatorid)
+
+  expect_true(4 %in% operator_ids)
+  expect_true(length(unique(operator_ids))>1)
+})
+
+
+
+
 
