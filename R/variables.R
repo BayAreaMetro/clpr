@@ -65,16 +65,34 @@ select_vars2 <- c("cardid_anony",
                   "productcategory",
                   "locationid")
 
-meaningful_transfer_vars <- c("cardid_anony","hour","minute",
-                              "locationname.origin","locationname.destination",
-                              "participantname",
-                              "transferdiscountflag","count",
-                              "timediff","median_timediff",
-                              "check1","check2",
-                              "routename","vehicleid_dvcl",
-                              "installdate","sublocation",
-                              "tripsequencenumber","sequencenumber")
+transaction_transfer_vars <- c("cardid_anony","hour","minute",
+                          "yday","wday","month",
+                          "is_bart","transfer_from_route",
+                          "transfer_to_route",
+                          "transfer_to_not_bart",
+                          "transfer_from_not_bart",
+                          "locationname.origin","locationname.destination",
+                          "transfer_to_operator",
+                          "transfer_from_operator",
+                          "transfer_from_operator_time",
+                          "transfer_to_operator_time",
+                          "transferdiscountflag","transaction_count",
+                          "bart_tr_count","tr_count_diff",
+                          "timediff",
+                          "operatorid_tr","participantname",
+                          "routename","vehicleid_dvcl",
+                          "installdate","sublocation",
+                          "tripsequencenumber","sequencenumber")
 
-#routeid_dvc is null
-#so is txnrouteid
 
+bart_flattened_transfers_variables <- c("cardid_anony","hour","minute",
+                                "yday","wday","month",
+                                "locationname.origin","locationname.destination",
+                                "transfer_to_operator","transfer_from_route",
+                                "transfer_to_route",
+                                "transfer_from_operator",
+                                "transfer_from_operator_time",
+                                "transfer_to_operator_time",
+                                "transferdiscountflag",
+                                "transaction_count",
+                                "bart_tr_count","tr_count_diff")

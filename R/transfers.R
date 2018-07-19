@@ -1,5 +1,70 @@
 library(stringr)
 
+#'  Flattens transactional samples into a per-bart transactions 
+#' 
+#' @param od_df a sample of transactions, effectively from the raw sfofaretransactions table, joined to other tables
+#' @returns bart_od_transfer_df table in which transfers in and out of bart are captured with metadata
+#' @importFrom dplyr group_by mutate case_when lag arrange filter select
+transactions_to_bart_transfers(tr_df){
+  od <- tr_df %>%
+    group_by(cardid_anony,yday) %>%
+    mutate(transaction_count = n())
+
+  od$is_bart <- od$operatorid_tr==4
+
+  od <- od %>%
+    group_by(cardid_anony,yday,is_bart) %>%
+    mutate(bart_tr_count = n(),
+           tr_count_diff = transaction_count-bart_tr_count)
+  
+  od <- od %>%
+    group_by(cardid_anony) %>%
+    arrange(hour, minute) %>%
+    mutate(timediff = abs(difftime(psttime, lag(psttime),units="mins")),
+           from_bart = lag(operatorid_tr)==4,
+           to_bart = lead(operatorid_tr)==4,
+           from_not_bart = lag(operatorid_tr)!=4,
+           to_not_bart = lead(operatorid_tr)!=4,
+           transfer_to_not_bart = (is_bart & from_bart & to_not_bart & lead(timediff<60)),
+           transfer_from_not_bart = (is_bart & to_bart & from_not_bart & timediff<120),
+           transfer_from_operator = case_when(transfer_from_not_bart ~ lag(participantname)),
+           transfer_to_operator = case_when(transfer_to_not_bart ~ lead(participantname)),
+           transfer_from_operator_time = case_when(transfer_from_not_bart ~ timediff),
+           transfer_to_operator_time = case_when(transfer_to_not_bart ~ lead(timediff)),
+           transfer_from_route = case_when(transfer_from_not_bart ~ lag(routename)),
+           transfer_to_route = case_when(transfer_to_not_bart ~ lead(routename))
+
+  #this is confusing, but you have to pull routes and transfers from
+  #operators from two-transactions back
+  #so here we effectively reach the lag back 2 transactions
+  od <- od %>%
+    group_by(cardid_anony) %>%
+    arrange(hour, minute) %>%
+    mutate(transfer_from_operator=case_when(from_bart ~ lag(transfer_from_operator)),
+           transfer_from_route=case_when(from_bart ~ lag(transfer_from_route)))
+
+  od <- od %>%
+    select(transaction_transfer_vars) %>% #see variables.R
+    arrange(cardid_anony, hour, minute) %>%
+    mutate()
+
+  bart_rider_ids <- od %>%
+    filter(operatorid_tr==4) %>%
+    pull(cardid_anony)
+
+  od_bart <- od %>%
+    filter(cardid_anony %in% bart_rider_ids)
+
+  bart_od_transfer_df <- od_bart[od_bart$is_bart & 
+                            !is.na(od_bart$locationname.destination),]
+
+  bart_od_transfer_df <- bart_od_transfer_df %>% 
+    select(bart_flattened_transfers_variables) #see variables.R
+
+  return(bart_od_transfer_df)
+}
+
+
 #'Build a database of transfers
 #'
 #'The anonymous Clipper data is potentially an excellent source for quantifying operator-to-operator transit movements.
