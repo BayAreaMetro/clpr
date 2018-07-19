@@ -13,6 +13,7 @@ Imports: boxr,
   stringr,
   testthat
 Suggests: knitr,
-    rmarkdown
+    rmarkdown,
+    testthat
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1

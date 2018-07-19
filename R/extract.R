@@ -72,49 +72,62 @@ devices_for_day <- function(partition_time="10:00:00",
 }
 
 #'@importFrom lubridate yday wday ymd
-sample_a_day <- function(rs,date1, users) {
+sample_a_day_with_devices <- function(rs,date1, users) {
   faretable_name <- fares_for_day(start_date=date1)
   device_table_name <- devices_for_day(start_date=date1)
-  all_result_tbl <- all_for_day_sample(rs,faretable_name,device_table_name, users=users)
-  human_readable_result_tbl <- make_user_sample_human_readable(rs,all_result_tbl)
-  human_readable_result_tbl <- parse_time(human_readable_result_tbl)
-  ldate <- lubridate::ymd(date1)
-  human_readable_result_tbl$yday <- yday(ldate)
-  human_readable_result_tbl$wday <- wday(ldate)
-  human_readable_result_tbl$month <- month(ldate)
+  transactions_and_devices_tbl <- transactions_and_devices_for_day(rs,faretable_name,device_table_name, users=users)
+  human_readable_result_tbl <- make_human_readable_with_devices(rs,transactions_and_devices_tbl)
+  human_readable_result_tbl <- parse_time(human_readable_result_tbl, date1)
   return(human_readable_result_tbl)
 }
 
+#'@importFrom lubridate yday wday ymd
+sample_day_of_transactions <- function(rs,date1, n_users) {
+  faretable_name <- fares_for_day(start_date=date1)
+  faretable_sample <- sample_user_transactions(rs,faretable_name,n=n_users)
+  human_readable_result_tbl <- make_transactions_human_readable(rs,faretable_sample)
+  return(human_readable_result_tbl)
+}
+
+# we do the date parsing this way because of the UTC/datetime crossover
 #'@importFrom lubridate hour minute
 parse_time <- function(df1) {
+  ldate <- lubridate::ymd(df1$date)
   t <- strftime(df1$psttime, format="%H:%M:%S")
   xx <- as.POSIXct(t, format="%H:%M:%S")
 
   df1$hour <- hour(xx)
   df1$minute <- minute(xx)
+  df1$yday <- yday(ldate)
+  df1$wday <- wday(ldate)
+  df1$month <- month(ldate)
   return(df1)
 }
 
-
-
-
 #'@importFrom dplyr pull
-sample_user_ids <- function(transactions_day, n) {
+sample_user_ids <- function(transactions_day, n_users) {
   card_ids <- transactions_day %>%
     dplyr::pull(cardid_anony)
   unique_card_ids <- unique(card_ids)
-  unique_card_ids_sample <- sample(unique_card_ids, n)
+  unique_card_ids_sample <- sample(unique_card_ids, n_users)
   return(unique_card_ids_sample)
 }
 
+#'@importFrom dplyr tbl
+sample_user_transactions <- function(rs, faretable_name, n_users) {
+  transactions_day <- dplyr::tbl(rs,
+    dbplyr::in_schema("clipper_days",faretable_name))
 
-all_for_day_sample <- function(rs,faretable_name,device_table_name,users=users) {
-  transactions_day <- dplyr::tbl(rs, dbplyr::in_schema("clipper_days",faretable_name))
+  sample_ids <- sample_user_ids(transactions_day, n=n_users)
 
-  sample_ids <- sample_user_ids(transactions_day, n=users)
-
-  transactions_day_user_sample <- dplyr::tbl(rs, dbplyr::in_schema("clipper_days",faretable_name)) %>%
+  transactions_day_user_sample <- dplyr::tbl(rs,
+    dbplyr::in_schema("clipper_days",faretable_name)) %>%
     filter(cardid_anony %in% sample_ids)
+  return(transactions_day_user_sample)
+}
+
+transactions_and_devices_for_day <- function(rs,faretable_name,device_table_name,users=users) {
+  transactions_day_user_sample <- sample_user_transactions(faretable_name)
 
   devices_day_sample <- tbl(rs,in_schema("clipper_days",device_table_name))
 
@@ -145,58 +158,60 @@ all_for_day_sample <- function(rs,faretable_name,device_table_name,users=users) 
   return(transactions_simple_devices_locations)
 }
 
-make_user_sample_human_readable <- function(rs,user_sample_tbl) {
+make_human_readable_with_devices <- function(rs,tr_tbl) {
   tr2 <- user_sample_tbl %>% select(select_vars1)
   tr2 <- tr2 %>% rename("locationname.device"="locationname")
+  transactions_simple <- tr2
+  transactions_simple_tbl <- make_transactions_human_readable(rs,transactions_simple)
+  transactions_simple_df <- transactions_simple_tbl %>%
+    select(select_device_vars) %>%
+    as_tibble(transactions_simple)
+  return(transactions_simple_df)
+}
 
+#' @importFrom dplyr left_join
+make_transactions_human_readable <- function(rs,tr_tbl) {
   participants <- tbl(rs, in_schema("clipper","participants"))
   routes <- tbl(rs, in_schema("clipper","routes"))
   locations <- tbl(rs, in_schema("clipper","locations"))
 
-  transactions_simple <- tr2
-
-  transactions_simple_tbl <- as_tibble(transactions_simple)
-
-  transactions_simple_tbl$destinationlocation <- as.integer(transactions_simple_tbl$destinationlocation)
-  transactions_simple_tbl$originlocation <- as.integer(transactions_simple_tbl$originlocation)
+  tr_tbl$destinationlocation <- as.integer(tr_tbl$destinationlocation)
+  tr_tbl$originlocation <- as.integer(tr_tbl$originlocation)
 
   participants_simple <- participants %>%
-    select(participantid,participantname) %>%
-    as_tibble()
+    select(participantid,participantname)
 
-  tr0 <- left_join(transactions_simple_tbl,
+  tr0 <- dplyr::left_join(tr_tbl,
                    participants_simple,
-                   by=c("operatorid_tr"=
+                   by=c("operatorid"=
                           "participantid"),
                    copy=TRUE)
 
 
-  tr1 <- left_join(tr0,
+  tr1 <- dplyr::left_join(tr0,
                    participants_simple,
                    by=c("transferoperator"=
                           "participantid"),
                    suffix=c('','.transfer'))
 
   routes_simple <- routes %>%
-    select(routeid,participantid,routename) %>%
-    as_tibble()
+    select(routeid,participantid,routename)
 
   tr2 <- left_join(tr1,
                    routes_simple,
-                   by=c("operatorid_tr"=
+                   by=c("operatorid"=
                           "participantid",
-                        "routeid_tr"=
+                        "routeid"=
                           "routeid"))
 
   locations_simple <- locations %>%
-    select(locationcode,participantid,locationname) %>%
-    as_tibble()
+    select(locationcode,participantid,locationname)
 
   tr3 <- left_join(tr2,
                    locations_simple,
                    by=c("originlocation"=
                           "locationcode",
-                        "operatorid_tr"=
+                        "operatorid"=
                           "participantid")) %>%
     rename("locationname.origin"="locationname")
 
@@ -204,10 +219,9 @@ make_user_sample_human_readable <- function(rs,user_sample_tbl) {
                    locations_simple,
                    by=c("destinationlocation"=
                           "locationcode",
-                        "operatorid_tr"=
+                        "operatorid"=
                           "participantid")) %>%
-    rename("locationname.destination"="locationname") %>%
-    select(select_vars2)
+    rename("locationname.destination"="locationname")
   return(tr4)
 }
 

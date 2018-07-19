@@ -7,9 +7,9 @@ bart_identify <- function(tr_df) {
     tr_df <- tr_df %>%
     group_by(cardid_anony) %>%
     arrange(hour, minute) %>%
-    mutate(is_bart = operatorid_tr==4,
-           from_bart = lag(operatorid_tr)==4,
-           to_bart = lead(operatorid_tr)==4,
+    mutate(is_bart = operatorid==4,
+           from_bart = lag(operatorid)==4,
+           to_bart = lead(operatorid)==4,
            exit_to_not_bart = (is_bart & from_bart & !to_bart),
            entrance_from_not_bart = (is_bart & to_bart & !from_bart))
     return(tr_df)
@@ -27,8 +27,8 @@ bart_lag_and_lead_metadata <- function(tr_df) {
              transfer_from_not_bart = (entrance_from_not_bart & timediff<120),
              transfer_from_operator = case_when(transfer_from_not_bart ~ lag(participantname)),
              transfer_to_operator = case_when(transfer_to_not_bart ~ lead(participantname)),
-             transfer_from_operator_time = case_when(transfer_from_not_bart ~ timediff),
-             transfer_to_operator_time = case_when(transfer_to_not_bart ~ lead(timediff)),
+             transfer_from_operator_time = case_when(transfer_from_not_bart ~ round(timediff,2)),
+             transfer_to_operator_time = case_when(transfer_to_not_bart ~ round(lead(timediff),2)),
              transfer_from_route = case_when(transfer_from_not_bart ~ lag(routename)),
              transfer_to_route = case_when(transfer_to_not_bart ~ lead(routename)))
 
@@ -72,7 +72,7 @@ bart_transactions_per_user <- function(tr_df) {
 #' @importFrom dplyr group_by mutate case_when lag arrange filter select
 bart_transactions_as_transfers <- function(tr_df){
   bart_rider_ids <- tr_df %>%
-    filter(operatorid_tr==4) %>%
+    filter(operatorid==4) %>%
     pull(cardid_anony)
 
   tr_df <- tr_df %>%
@@ -87,7 +87,7 @@ bart_transactions_as_transfers <- function(tr_df){
   #here we drop the first in the series of bart transactions
   #the relevant metadata for the first has been pulled
   #onto the final transaction in bart_lag_and_lead_metadata()
-  bart_xfer_df <- tr_df[od_bart$is_bart &
+  bart_xfer_df <- tr_df[tr_df$is_bart &
                             !is.na(tr_df$locationname.destination),]
 
   bart_xfer_df <- bart_xfer_df %>%

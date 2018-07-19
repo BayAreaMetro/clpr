@@ -27,6 +27,6 @@ AS SELECT ((generationtime) AT TIME ZONE 'UTC') AT TIME ZONE 'PST' as psttime,
           sequencenumber,
           applicationserialnumber,
           destinationlocation
-FROM ctp.y2016 
+FROM clipper.sfofaretransaction
     WHERE generationtime > '{start_date} {partition_time}'
     AND generationtime < '{end_date} {partition_time}';

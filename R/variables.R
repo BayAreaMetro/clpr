@@ -78,9 +78,8 @@ transaction_transfer_vars <- c("cardid_anony","hour","minute",
                           "transfer_to_operator_time",
                           "transferdiscountflag",
                           "timediff",
-                          "operatorid_tr","participantname",
-                          "routename","vehicleid_dvcl",
-                          "installdate","sublocation",
+                          "operatorid","participantname",
+                          "routename",
                           "tripsequencenumber","sequencenumber")
 
 
