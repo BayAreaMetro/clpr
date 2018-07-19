@@ -14,11 +14,11 @@ dates <- seq(start, end, by="day")
 
 rs <- connect_rs()
 
-l_dfs <- lapply(dates, function(x) {sample_a_day(rs,x,users=1000) %>% as_tibble()})
+l_dfs <- lapply(dates, function(x) {sample_a_day(rs,x,users=10000) %>% as_tibble()})
 
 sample_df <- bind_rows(l_dfs)
 
-bart_od <- transactions_to_bart_transfers(sample_df)
+bart_od <- bart_transactions_as_transfers(sample_df)
 
 write_csv(bart_od,"~/Documents/Projects/BAM_github_repos/clpr/bart_od.csv")
 
