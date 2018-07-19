@@ -4,6 +4,7 @@
 .DS_Store
 .Rbuildignore
 inst/doc
+data-raw-local
 
 # History files
 .Rapp.history
