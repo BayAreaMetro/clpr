@@ -1,86 +1,99 @@
 library(stringr)
 
-#' Adds columns describing the operators of previous and later transactions
+#' Adds columns identifying bart transactions, including lags and leads
 #' @param tr_df a dataframe of transactions
 #' @returns tr_df a dataframe of transactions with columns: from_bart, to_bart, from_not_bart, to_not_bart
-identify_bart_entrances_and_exits <- function(tr_df) {
+bart_identify <- function(tr_df) {
     tr_df <- tr_df %>%
     group_by(cardid_anony) %>%
     arrange(hour, minute) %>%
-    mutate(from_bart = lag(operatorid_tr)==4,
-           to_bart = lead(operatorid_tr)==4,
+    mutate(is_bart = operatorid==4,
+           from_bart = lag(operatorid)==4,
+           to_bart = lead(operatorid)==4,
            exit_to_not_bart = (is_bart & from_bart & !to_bart),
            entrance_from_not_bart = (is_bart & to_bart & !from_bart))
     return(tr_df)
 }
 
-#' Adds columns describing the metadata of previous and later transactions
+#' Adds columns describing the route, time, and operator name of previous and later transactions
 #' @param tr_df a dataframe of transactions
 #' @returns tr_df a dataframe of transactions
-flatten_bart_transfer_metadata <- function(tr_df) {
-    od <- od %>%
-    group_by(cardid_anony) %>%
-    arrange(hour, minute) %>%
-    mutate(timediff = abs(difftime(psttime, lag(psttime),units="mins")),
-           transfer_to_not_bart = (exit_to_not_bart & lead(timediff<60)),
-           transfer_from_not_bart = (entrance_from_not_bart & timediff<120),
-           transfer_from_operator = case_when(transfer_from_not_bart ~ lag(participantname)),
-           transfer_to_operator = case_when(transfer_to_not_bart ~ lead(participantname)),
-           transfer_from_operator_time = case_when(transfer_from_not_bart ~ timediff),
-           transfer_to_operator_time = case_when(transfer_to_not_bart ~ lead(timediff)),
-           transfer_from_route = case_when(transfer_from_not_bart ~ lag(routename)),
-           transfer_to_route = case_when(transfer_to_not_bart ~ lead(routename)))
+bart_lag_and_lead_metadata <- function(tr_df) {
+    tr_df <- tr_df %>%
+      group_by(cardid_anony) %>%
+      arrange(hour, minute) %>%
+      mutate(timediff = abs(difftime(psttime, lag(psttime),units="mins")),
+             transfer_to_not_bart = (exit_to_not_bart & lead(timediff<60)),
+             transfer_from_not_bart = (entrance_from_not_bart & timediff<120),
+             transfer_from_operator = case_when(transfer_from_not_bart ~ lag(participantname)),
+             transfer_to_operator = case_when(transfer_to_not_bart ~ lead(participantname)),
+             transfer_from_operator_time = case_when(transfer_from_not_bart ~ round(timediff,2)),
+             transfer_to_operator_time = case_when(transfer_to_not_bart ~ round(lead(timediff),2)),
+             transfer_from_route = case_when(transfer_from_not_bart ~ lag(routename)),
+             transfer_to_route = case_when(transfer_to_not_bart ~ lead(routename)))
+
     #this is confusing, but you have to pull routes and transfers from
     #operators from two-transactions back
     #so here we effectively reach the lag back 2 transactions
-    od <- od %>%
+    tr_df <- tr_df %>%
       group_by(cardid_anony) %>%
       arrange(hour, minute) %>%
       mutate(transfer_from_operator=case_when(from_bart ~ lag(transfer_from_operator)),
              transfer_from_route=case_when(from_bart ~ lag(transfer_from_route)))
-    return(od)
+    return(tr_df)
 }
 
-#'  Flattens transactional samples into a per-bart transactions 
-#' 
-#' @param od_df a sample of transactions, effectively from the raw sfofaretransactions table, joined to other tables
-#' @returns bart_od_transfer_df table in which transfers in and out of bart are captured with metadata
+#' Adds a column with a counts of the number of transactions per user
+#' @param tr_df a dataframe of transactions
+#' @returns tr_df a dataframe of transactions with a transaction_count column
+transactions_per_user <- function(tr_df) {
+    tr_df <- tr_df %>%
+      group_by(cardid_anony,yday) %>%
+      mutate(transaction_count = n())
+    return(tr_df)
+}
+
+
+#' Adds a column with a counts of the number of bart transactions per user and diff with all transactions
+#' @param tr_df a dataframe of transactions
+#' @returns tr_df a dataframe of transactions with a bart_tr_count and tr_count_diff column
+bart_transactions_per_user <- function(tr_df) {
+    tr_df <- tr_df %>%
+      group_by(cardid_anony,yday,is_bart) %>%
+      mutate(bart_tr_count = n(),
+             tr_count_diff = transaction_count-bart_tr_count)
+    return(tr_df)
+}
+
+#' Spreads multiple transactions across columns into one-row-per-bart-trip (with an eye to transfers in and out)
+#'
+#' @param tr_df a sample of transactions, effectively from the raw sfofaretransactions table, joined to other tables
+#' @returns bart_xfer_df table in which transfers in and out of bart are captured with metadata
 #' @importFrom dplyr group_by mutate case_when lag arrange filter select
-transactions_to_bart_transfers <- function(tr_df){
-  od <- tr_df %>%
-    group_by(cardid_anony,yday) %>%
-    mutate(transaction_count = n())
-
-  od$is_bart <- od$operatorid_tr==4
-
-  od <- od %>%
-    group_by(cardid_anony,yday,is_bart) %>%
-    mutate(bart_tr_count = n(),
-           tr_count_diff = transaction_count-bart_tr_count)
-  
-  od <- identify_bart_entrances_and_exits(od)
-
-  od <- flatten_bart_transfer_metadata(od)
-
-  od <- od %>%
-    select(transaction_transfer_vars) %>% #see variables.R
-    arrange(cardid_anony, hour, minute) %>%
-    mutate()
-
-  bart_rider_ids <- od %>%
-    filter(operatorid_tr==4) %>%
+bart_transactions_as_transfers <- function(tr_df){
+  bart_rider_ids <- tr_df %>%
+    filter(operatorid==4) %>%
     pull(cardid_anony)
 
-  od_bart <- od %>%
+  tr_df <- tr_df %>%
     filter(cardid_anony %in% bart_rider_ids)
 
-  bart_od_transfer_df <- od_bart[od_bart$is_bart & 
-                            !is.na(od_bart$locationname.destination),]
+  tr_df <- bart_identify(tr_df)
+  tr_df <- bart_lag_and_lead_metadata(tr_df)
 
-  bart_od_transfer_df <- bart_od_transfer_df %>% 
+  tr_df <- tr_df %>%
+    select(transaction_transfer_vars) #see variables.R
+
+  #here we drop the first in the series of bart transactions
+  #the relevant metadata for the first has been pulled
+  #onto the final transaction in bart_lag_and_lead_metadata()
+  bart_xfer_df <- tr_df[tr_df$is_bart &
+                            !is.na(tr_df$locationname.destination),]
+
+  bart_xfer_df <- bart_xfer_df %>%
     select(bart_flattened_transfers_variables) #see variables.R
 
-  return(bart_od_transfer_df)
+  return(bart_xfer_df)
 }
 
 

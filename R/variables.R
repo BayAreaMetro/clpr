@@ -76,12 +76,10 @@ transaction_transfer_vars <- c("cardid_anony","hour","minute",
                           "transfer_from_operator",
                           "transfer_from_operator_time",
                           "transfer_to_operator_time",
-                          "transferdiscountflag","transaction_count",
-                          "bart_tr_count","tr_count_diff",
+                          "transferdiscountflag",
                           "timediff",
-                          "operatorid_tr","participantname",
-                          "routename","vehicleid_dvcl",
-                          "installdate","sublocation",
+                          "operatorid","participantname",
+                          "routename",
                           "tripsequencenumber","sequencenumber")
 
 
@@ -93,6 +91,4 @@ bart_flattened_transfers_variables <- c("cardid_anony","hour","minute",
                                 "transfer_from_operator",
                                 "transfer_from_operator_time",
                                 "transfer_to_operator_time",
-                                "transferdiscountflag",
-                                "transaction_count",
-                                "bart_tr_count","tr_count_diff")
+                                "transferdiscountflag")
