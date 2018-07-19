@@ -30,8 +30,9 @@ test_that("we parse time on transactions", {
   rs <- connect_rs()
   tbl1 <- sample_day_of_transactions(rs,date1,n_users=10)
   df1 <- tbl1 %>% as_tibble() %>% mutate(date=date1)
-  df1 <- parse_time(df1)
-  expect_true("hour" %in% names(df1))
+  df1 <- parse_clipper_time(df1)
+  expect_true(median(df1$hour) > 5 &
+                median(df1$hour) < 20)
 })
 
 

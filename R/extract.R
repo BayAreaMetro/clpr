@@ -77,7 +77,7 @@ sample_a_day_with_devices <- function(rs,date1, users) {
   device_table_name <- devices_for_day(start_date=date1)
   transactions_and_devices_tbl <- transactions_and_devices_for_day(rs,faretable_name,device_table_name, users=users)
   human_readable_result_tbl <- make_human_readable_with_devices(rs,transactions_and_devices_tbl)
-  human_readable_result_tbl <- parse_time(human_readable_result_tbl, date1)
+  human_readable_result_tbl <- parse_clipper_time(human_readable_result_tbl, date1)
   return(human_readable_result_tbl)
 }
 
@@ -91,7 +91,7 @@ sample_day_of_transactions <- function(rs,date1, n_users) {
 
 # we do the date parsing this way because of the UTC/datetime crossover
 #'@importFrom lubridate hour minute
-parse_time <- function(df1) {
+parse_clipper_time <- function(df1) {
   ldate <- lubridate::ymd(df1$date)
   t <- strftime(df1$psttime, format="%H:%M:%S")
   xx <- as.POSIXct(t, format="%H:%M:%S")

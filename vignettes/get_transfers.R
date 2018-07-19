@@ -12,9 +12,10 @@ end   <- as.Date("03-31-16",format="%m-%d-%y")
 
 dates <- seq(start, end, by="day")
 
+source("~/.keys/rs.R")
 rs <- connect_rs()
 
-l_dfs <- lapply(dates[1:3], function(x) {
+l_dfs <- lapply(dates[1], function(x) {
     sample_day_of_transactions(rs,x,n_users=100) %>%
     as_tibble() %>%
     mutate(date=x)
