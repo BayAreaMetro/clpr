@@ -32,7 +32,7 @@ bart_od <- bart_od %>%
 out_time_df <- spread_time_column(bart_od$transaction_time, prefix="tag_on_")
 in_time_df <- spread_time_column(bart_od$time_of_previous, prefix="tag_out_")
 
-bart_od2 <- cbind(bart_od,in_time_df,out_time_df)
+bart_od <- cbind(bart_od,in_time_df,out_time_df)
 
 #anonymize again
 bart_od$cardid_anony <- anonymizer::anonymize(bart_od$cardid_anony,
