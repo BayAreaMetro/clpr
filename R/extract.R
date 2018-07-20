@@ -6,6 +6,15 @@ sample_day_of_transactions <- function(rs,date1, n_users) {
   return(human_readable_result_tbl)
 }
 
+#'@importFrom lubridate yday wday ymd
+day_of_transactions <- function(rs,date1, n_users) {
+  faretable_name <- fares_for_day(start_date=date1)
+  transactions_day <- dplyr::tbl(rs,
+                                 dbplyr::in_schema("clipper_days",faretable_name))
+  human_readable_result_tbl <- make_transactions_human_readable(rs,transactions_day)
+  return(human_readable_result_tbl)
+}
+
 #'
 #'@param con a connection to the redshift db
 #'@export
