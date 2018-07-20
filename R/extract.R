@@ -1,14 +1,14 @@
 #'@importFrom lubridate yday wday ymd
-sample_day_of_transactions <- function(rs,date1, n_users) {
-  faretable_name <- fares_for_day(start_date=date1)
+sample_day_of_transactions <- function(rs,date1, n_users, drop_existing_table=FALSE) {
+  faretable_name <- fares_for_day(start_date=date1, drop_existing_table=drop_existing_table)
   faretable_sample <- sample_user_transactions(rs,faretable_name,n=n_users)
   human_readable_result_tbl <- make_transactions_human_readable(rs,faretable_sample)
   return(human_readable_result_tbl)
 }
 
 #'@importFrom lubridate yday wday ymd
-day_of_transactions <- function(rs,date1, n_users) {
-  faretable_name <- fares_for_day(start_date=date1)
+day_of_transactions <- function(rs,date1, n_users, drop_existing_table=FALSE) {
+  faretable_name <- fares_for_day(start_date=date1, drop_existing_table=drop_existing_table)
   transactions_day <- dplyr::tbl(rs,
                                  dbplyr::in_schema("clipper_days",faretable_name))
   human_readable_result_tbl <- make_transactions_human_readable(rs,transactions_day)
