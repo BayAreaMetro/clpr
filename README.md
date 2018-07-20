@@ -35,6 +35,7 @@ Example Usage
 Sample a day of transactions by user
 
 ```{r}
+rs <- connect_rs()
 transactions_tbl <- sample_day_of_transactions(rs,x,n_users=100)
 transactions_df <- as_tibble(transactions_tbl)
 ```
