@@ -95,18 +95,26 @@ sample_day_of_transactions <- function(rs,date1, n_users) {
   return(human_readable_result_tbl)
 }
 
-# we do the date parsing this way because of the UTC/datetime crossover
+#' get a nicely formatted time dataframe
+#' (yday, hour, yday, row, etc) for a column
+#' we do the date parsing this way because of the UTC/datetime crossover
 #'@importFrom lubridate hour minute
-parse_clipper_time <- function(df1) {
-  ldate <- lubridate::ymd(df1$date)
-  t <- strftime(df1$psttime, format="%H:%M:%S")
-  xx <- as.POSIXct(t, format="%H:%M:%S")
+#'@import from rlang := !! enquo
+spread_time_column <- function(timestamp_col, prefix="t_") {
+  expr <- enquo(prefix)
+  hour_name <- paste0(quo_name(expr),"hour")
+  minute_name <- paste0(quo_name(expr),"minute")
+  yday_name <- paste0(quo_name(expr),"yday")
+  wday_name <- paste0(quo_name(expr),"wday")
+  month_name <- paste0(quo_name(expr),"month")
 
-  df1$hour <- hour(xx)
-  df1$minute <- minute(xx)
-  df1$yday <- yday(ldate)
-  df1$wday <- wday(ldate)
-  df1$month <- month(ldate)
+  df1 <- tibble::tibble(
+    !! hour_name := lubridate::hour(timestamp_col),
+    !! minute_name := lubridate::minute(timestamp_col),
+    !! yday_name := lubridate::yday(timestamp_col),
+    !! wday_name := lubridate::wday(timestamp_col),
+    !! month_name := lubridate::month(timestamp_col)
+  )
   return(df1)
 }
 
