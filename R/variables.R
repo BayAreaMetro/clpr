@@ -1,5 +1,5 @@
 select_vars1 <- c("cardid_anony",
-                  "psttime",
+                  "transaction_time",
                   "originlocation",
                   "destinationlocation",
                   "transferdiscountflag",
@@ -33,7 +33,7 @@ select_vars1 <- c("cardid_anony",
 # "participantname.transfer",
 
 select_vars2 <- c("cardid_anony",
-                  "psttime",
+                  "transaction_time",
                   "locationname.origin",
                   "locationname.destination",
                   "participantname",
@@ -65,8 +65,8 @@ select_vars2 <- c("cardid_anony",
                   "productcategory",
                   "locationid")
 
-transaction_transfer_vars <- c("cardid_anony","hour","minute",
-                          "yday","wday","month",
+#deprecated?
+transaction_transfer_vars <- c("cardid_anony","transaction_time","time_of_previous",
                           "is_bart","transfer_from_route",
                           "transfer_to_route",
                           "transfer_to_not_bart",
@@ -82,8 +82,8 @@ transaction_transfer_vars <- c("cardid_anony","hour","minute",
                           "tripsequencenumber","sequencenumber")
 
 
-bart_flattened_transfers_variables <- c("cardid_anony","hour","minute",
-                                "yday","wday","month",
+bart_flattened_transfers_variables <- c("cardid_anony",
+                                        "transaction_time","time_of_previous",
                                 "locationname.origin","locationname.destination",
                                 "transfer_to_operator","transfer_from_route",
                                 "transfer_to_route",

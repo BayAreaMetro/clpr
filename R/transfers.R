@@ -21,7 +21,7 @@ bart_identify <- function(tr_df) {
 bart_lag_and_lead_metadata <- function(tr_df) {
     tr_df <- tr_df %>%
       dplyr::group_by(cardid_anony) %>%
-      dplyr::arange(transaction_time) %>%
+      dplyr::arrange(transaction_time) %>%
       dplyr::mutate(timediff = abs(difftime(transaction_time, lag(transaction_time),units="mins")),
              time_of_previous = lag(transaction_time),
              transfer_from_time = round(timediff,2),
@@ -38,7 +38,7 @@ bart_lag_and_lead_metadata <- function(tr_df) {
     #so here we effectively reach the lag back 2 transactions
     tr_df <- tr_df %>%
       dplyr::group_by(cardid_anony) %>%
-      dplyr::arrange(hour, minute) %>%
+      dplyr::arrange(transaction_time) %>%
       dplyr::mutate(transfer_from_operator=case_when(from_bart ~ lag(transfer_from_operator)),
              transfer_from_route=case_when(from_bart ~ lag(transfer_from_route)),
              transfer_from_operator_time = case_when(from_bart ~ lag(transfer_from_time)))
@@ -88,10 +88,7 @@ bart_transactions_as_transfers <- function(tr_df){
   #onto the final transaction in bart_lag_and_lead_metadata()
   bart_xfer_df <- tr_df[tr_df$is_bart &
                             !is.na(tr_df$locationname.destination),]
-
-  bart_xfer_df <- bart_xfer_df %>%
-    dplyr::select(bart_flattened_transfers_variables) #see variables.R
-
+  bart_xfer_df <- bart_xfer_df %>% ungroup() %>% as_tibble()
   return(bart_xfer_df)
 }
 
