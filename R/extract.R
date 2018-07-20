@@ -44,7 +44,7 @@ fares_for_day <- function(partition_time="10:00:00",
     dbExecute(con, drop_tbl)
   }
 
-  day_tables_sql <- readr::read_file(here::here('inst/sql/day_fares.sql'))
+  day_tables_sql <- readr::read_file('inst/sql/day_fares.sql')
   day_tables_sql <- glue::glue(day_tables_sql,
                                date_title = date_title,
                                start_date = start_date,
@@ -222,7 +222,7 @@ devices_for_day <- function(partition_time="10:00:00",
     dbExecute(con, drop_tbl)
   }
 
-  day_tables_sql <- readr::read_file(here::here('inst/sql/day_devices.sql'))
+  day_tables_sql <- readr::read_file('inst/sql/day_devices.sql')
   day_tables_sql <- glue::glue(day_tables_sql,
                                date_title = date_title,
                                start_date = start_date,
