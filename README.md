@@ -48,8 +48,8 @@ bart_od <- bart_transactions_as_transfers(sample_df)
 Use lubridate to spread the timestamp column into day of year, month, hour, and minute integers. 
 
 ```{r}
-out_time_df <- spread_time_column(bart_od$transaction_time, prefix="tag_on_")
-in_time_df <- spread_time_column(bart_od$time_of_previous, prefix="tag_out_")
+out_time_df <- spread_time_column(bart_od$transaction_time, prefix="tag_out_")
+in_time_df <- spread_time_column(bart_od$time_of_previous, prefix="tag_on_")
 ```
 
 Background
