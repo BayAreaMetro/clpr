@@ -12,6 +12,12 @@ LazyData: true
 Imports: boxr,
   stringr,
   testthat
+  lubridate,
+  dplyr,
+  DBI,
+  RPostgres,
+  dbplyr,
+  readr
 Suggests: knitr,
     rmarkdown,
     testthat
