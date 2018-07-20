@@ -21,6 +21,37 @@ if (!require(devtools)) {
 devtools::install_github('bayareametro/clpr')
 ```
 
+This package has a number of dependencies, the major ones being the `tidyverse` and `RPostgres`
+
+Setup
+==========
+If you [define environmental variables](https://stat.ethz.ch/R-manual/R-devel/library/base/html/Sys.setenv.html) for the database, you can use the `connect_rs()` function to connect to the database. See expected variable names in [R/connect_db.R](R/connect_db.R) 
+
+Otherwise, you'll have to connect to the db as you prefer. 
+
+Example Usage
+===========
+
+Sample a day of transactions by user
+
+```{r}
+transactions_tbl <- sample_day_of_transactions(rs,x,n_users=100)
+transactions_df <- as_tibble(transactions_tbl)
+```
+
+Flatten those transactions into per-row BART transfers. 
+
+```{r}
+bart_od <- bart_transactions_as_transfers(sample_df)
+```
+
+Use lubridate to spread the timestamp column into day of year, month, hour, and minute integers. 
+
+```{r}
+out_time_df <- spread_time_column(bart_od$transaction_time, prefix="tag_on_")
+in_time_df <- spread_time_column(bart_od$time_of_previous, prefix="tag_out_")
+```
+
 Background
 ==========
 
