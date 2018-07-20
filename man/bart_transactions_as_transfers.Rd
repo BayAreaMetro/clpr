@@ -2,7 +2,7 @@
 % Please edit documentation in R/transfers.R
 \name{bart_transactions_as_transfers}
 \alias{bart_transactions_as_transfers}
-\title{Spreads multiple transactions across columns into one-row-per-bart-trip (with an eye to transfers in and out)}
+\title{Spreads multiple transactions across columns into one-row-per-bart-trip (with a focus on transfers in and out)}
 \usage{
 bart_transactions_as_transfers(tr_df)
 }
@@ -10,5 +10,5 @@ bart_transactions_as_transfers(tr_df)
 \item{tr_df}{a sample of transactions, effectively from the raw sfofaretransactions table, joined to other tables}
 }
 \description{
-Spreads multiple transactions across columns into one-row-per-bart-trip (with an eye to transfers in and out)
+Spreads multiple transactions across columns into one-row-per-bart-trip (with a focus on transfers in and out)
 }

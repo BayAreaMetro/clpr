@@ -137,14 +137,14 @@ sample_user_transactions <- function(rs, faretable_name, n_users) {
 
   transactions_day_user_sample <- dplyr::tbl(rs,
     dbplyr::in_schema("clipper_days",faretable_name)) %>%
-    filter(cardid_anony %in% sample_ids)
+    dplyr::filter(cardid_anony %in% sample_ids)
   return(transactions_day_user_sample)
 }
 
 transactions_and_devices_for_day <- function(rs,faretable_name,device_table_name,users=users) {
   transactions_day_user_sample <- sample_user_transactions(faretable_name)
 
-  devices_day_sample <- tbl(rs,in_schema("clipper_days",device_table_name))
+  devices_day_sample <- tbl(rs,dplyr::in_schema("clipper_days",device_table_name))
 
   transactions_simple_devices <- left_join(transactions_day_user_sample,
                                            devices_day_sample,
@@ -156,12 +156,12 @@ transactions_and_devices_for_day <- function(rs,faretable_name,device_table_name
                                                   "deviceserialnumber"),
                                            suffix=c("_tr","_dvc"))
 
-  device_locations <- tbl(rs,in_schema("clipper","devicelocations")) %>%
+  device_locations <- tbl(rs,dplyr::in_schema("clipper","devicelocations")) %>%
     select(installdate,modelid,vehicleid,placeid,locationname,sublocation,deviceid) %>%
     rename(vehicleid_dvcl = vehicleid)
 
   recent_device_locations <- device_locations %>%
-    group_by(deviceid) %>% filter(installdate < "2017-01-01") %>%
+    group_by(deviceid) %>% dplyr::filter(installdate < "2017-01-01") %>%
     top_n(1,installdate)
 
   transactions_simple_devices_locations <- left_join(transactions_simple_devices,
@@ -186,9 +186,9 @@ make_human_readable_with_devices <- function(rs,tr_tbl) {
 
 #' @importFrom dplyr left_join
 make_transactions_human_readable <- function(rs,tr_tbl) {
-  participants <- tbl(rs, in_schema("clipper","participants"))
-  routes <- tbl(rs, in_schema("clipper","routes"))
-  locations <- tbl(rs, in_schema("clipper","locations"))
+  participants <- tbl(rs, dplyr::in_schema("clipper","participants"))
+  routes <- tbl(rs, dplyr::in_schema("clipper","routes"))
+  locations <- tbl(rs, dplyr::in_schema("clipper","locations"))
 
   tr_tbl$destinationlocation <- as.integer(tr_tbl$destinationlocation)
   tr_tbl$originlocation <- as.integer(tr_tbl$originlocation)
@@ -323,7 +323,7 @@ extract_sequence_by_date <- function(con){
   working.indiv <- select(working.group, ClipperCardID, CircadianDate, CircadianDayOfWeek, RunSequence)
   working.indiv <- working.indiv %.%
     group_by(ClipperCardID, CircadianDate) %.%
-    filter(stringr::str_length(RunSequence) == max(stringr::str_length(RunSequence)))
+    dplyr::filter(stringr::str_length(RunSequence) == max(stringr::str_length(RunSequence)))
 
   sequence.freq <- tally(group_by(working.indiv, CircadianDate, RunSequence))
   return(sequence.freq)
@@ -424,7 +424,7 @@ extract_sequence_for_random_week <- function(con){
   working.indiv <- select(working.group, ClipperCardID, DayID, RunSequence)
   working.indiv <- working.indiv %.%
     group_by(ClipperCardID, DayID) %.%
-    filter(stringr::str_length(RunSequence) == max(stringr::str_length(RunSequence)))
+    dplyr::filter(stringr::str_length(RunSequence) == max(stringr::str_length(RunSequence)))
 
   sequence.freq <- tally(group_by(working.indiv, DayID, RunSequence))
 

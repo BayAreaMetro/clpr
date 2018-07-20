@@ -23,7 +23,7 @@ hist(od$count)
 ```
 
 ```{r}
-t <- strftime(od$psttime, format="%H:%M:%S")
+t <- strftime(od$transaction_time, format="%H:%M:%S")
 xx <- as.POSIXct(t, format="%H:%M:%S")
 
 od$hour <- hour(xx)
@@ -33,13 +33,13 @@ od$minute <- minute(xx)
 ```{r}
 od <- od %>% 
   group_by(cardid_anony) %>%
-  mutate(timediff = difftime(psttime, lag(psttime),units="mins"))
+  mutate(timediff = difftime(transaction_time, lag(transaction_time),units="mins"))
 ```
 
 ```{r}
 od <- od %>%
   select(cardid_anony, hour, minute, timediff, everything()) %>%
-  arrange(cardid_anony, hour, minute, psttime) %>%
+  arrange(cardid_anony, hour, minute, transaction_time) %>%
   mutate()
 ```
 

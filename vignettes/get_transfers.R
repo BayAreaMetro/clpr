@@ -6,11 +6,12 @@ library(dplyr)
 library(readr)
 library(dplyr)
 library(lubridate)
+library(clpr)
 
 start <- as.Date("01-01-16",format="%m-%d-%y")
 end   <- as.Date("12-31-16",format="%m-%d-%y")
 
-dates <- sample(seq(start, end, by="day"),10)
+dates <- sample(seq(start, end, by="day"),1)
 
 source("~/.keys/rs.R")
 rs <- connect_rs()
@@ -23,9 +24,13 @@ l_dfs <- lapply(dates, function(x) {
 
 sample_df <- bind_rows(l_dfs)
 
-df1 <- parse_clipper_time(sample_df)
+bart_od <- bart_transactions_as_transfers(sample_df)
 
-bart_od <- bart_transactions_as_transfers(df1)
+bart_od <- bart_od %>%
+  select(transaction_transfer_vars) #see variables.R
+
+out_time_df <- spread_time_column(transaction_time, prefix="tag_on_")
+in_time_df <- spread_time_column(time_of_previous, prefix="tag_out_")
 
 #anonymize again
 bart_od$cardid_anony <- anonymizer::anonymize(bart_od$cardid_anony,

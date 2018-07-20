@@ -1,7 +1,7 @@
 create table clipper_days.fares_{date_title}
 SORTKEY(cardid_anony,
         generationtime)
-AS SELECT ((generationtime) AT TIME ZONE 'UTC') AT TIME ZONE 'PST' as psttime,
+AS SELECT ((generationtime) AT TIME ZONE 'UTC') AT TIME ZONE 'PST' as transaction_time,
           generationtime,
           FUNC_SHA1(applicationserialnumber) as cardid_anony,
           operatorid,

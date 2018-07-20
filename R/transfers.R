@@ -5,9 +5,9 @@ library(stringr)
 #' @returns tr_df a dataframe of transactions with columns: from_bart, to_bart, from_not_bart, to_not_bart
 bart_identify <- function(tr_df) {
     tr_df <- tr_df %>%
-      group_by(cardid_anony) %>%
-      arrange(hour, minute) %>%
-      mutate(is_bart = operatorid==4,
+      dplyr::group_by(cardid_anony) %>%
+      dplyr::arrange(transaction_time) %>%
+      dplyr::mutate(is_bart = operatorid==4,
              from_bart = lag(operatorid)==4,
              to_bart = lead(operatorid)==4,
              exit_to_not_bart = (is_bart & from_bart & !to_bart),
@@ -20,10 +20,10 @@ bart_identify <- function(tr_df) {
 #' @returns tr_df a dataframe of transactions
 bart_lag_and_lead_metadata <- function(tr_df) {
     tr_df <- tr_df %>%
-      group_by(cardid_anony) %>%
-      arrange(hour, minute) %>%
-      mutate(timediff = abs(difftime(psttime, lag(psttime),units="mins")),
-             time_of_previous = lag(psttime),
+      dplyr::group_by(cardid_anony) %>%
+      dplyr::arange(transaction_time) %>%
+      dplyr::mutate(timediff = abs(difftime(transaction_time, lag(transaction_time),units="mins")),
+             time_of_previous = lag(transaction_time),
              transfer_from_time = round(timediff,2),
              transfer_to_operator_time = round(lead(timediff),2),
              transfer_to_not_bart = (exit_to_not_bart & transfer_to_operator_time<60),
@@ -37,9 +37,9 @@ bart_lag_and_lead_metadata <- function(tr_df) {
     #operators from two-transactions back
     #so here we effectively reach the lag back 2 transactions
     tr_df <- tr_df %>%
-      group_by(cardid_anony) %>%
-      arrange(hour, minute) %>%
-      mutate(transfer_from_operator=case_when(from_bart ~ lag(transfer_from_operator)),
+      dplyr::group_by(cardid_anony) %>%
+      dplyr::arrange(hour, minute) %>%
+      dplyr::mutate(transfer_from_operator=case_when(from_bart ~ lag(transfer_from_operator)),
              transfer_from_route=case_when(from_bart ~ lag(transfer_from_route)),
              transfer_from_operator_time = case_when(from_bart ~ lag(transfer_from_time)))
     return(tr_df)
@@ -50,8 +50,8 @@ bart_lag_and_lead_metadata <- function(tr_df) {
 #' @returns tr_df a dataframe of transactions with a transaction_count column
 transactions_per_user <- function(tr_df) {
     tr_df <- tr_df %>%
-      group_by(cardid_anony,yday) %>%
-      mutate(transaction_count = n())
+      dplyr::group_by(cardid_anony,yday) %>%
+      dplyr::mutate(transaction_count = n())
     return(tr_df)
 }
 
@@ -61,30 +61,27 @@ transactions_per_user <- function(tr_df) {
 #' @returns tr_df a dataframe of transactions with a bart_tr_count and tr_count_diff column
 bart_transactions_per_user <- function(tr_df) {
     tr_df <- tr_df %>%
-      group_by(cardid_anony,yday,is_bart) %>%
-      mutate(bart_tr_count = n(),
+      dplyr::group_by(cardid_anony,yday,is_bart) %>%
+      dplyr::mutate(bart_tr_count = n(),
              tr_count_diff = transaction_count-bart_tr_count)
     return(tr_df)
 }
 
-#' Spreads multiple transactions across columns into one-row-per-bart-trip (with an eye to transfers in and out)
+#' Spreads multiple transactions across columns into one-row-per-bart-trip (with a focus on transfers in and out)
 #'
 #' @param tr_df a sample of transactions, effectively from the raw sfofaretransactions table, joined to other tables
 #' @returns bart_xfer_df table in which transfers in and out of bart are captured with metadata
 #' @importFrom dplyr group_by mutate case_when lag arrange filter select
 bart_transactions_as_transfers <- function(tr_df){
   bart_rider_ids <- tr_df %>%
-    filter(operatorid==4) %>%
-    pull(cardid_anony)
+    dplyr::filter(operatorid==4) %>%
+    dplyr::pull(cardid_anony)
 
   tr_df <- tr_df %>%
-    filter(cardid_anony %in% bart_rider_ids)
+    dplyr::filter(cardid_anony %in% bart_rider_ids)
 
   tr_df <- bart_identify(tr_df)
   tr_df <- bart_lag_and_lead_metadata(tr_df)
-
-  tr_df <- tr_df %>%
-    select(transaction_transfer_vars) #see variables.R
 
   #here we drop the first in the series of bart transactions
   #the relevant metadata for the first has been pulled
@@ -93,7 +90,7 @@ bart_transactions_as_transfers <- function(tr_df){
                             !is.na(tr_df$locationname.destination),]
 
   bart_xfer_df <- bart_xfer_df %>%
-    select(bart_flattened_transfers_variables) #see variables.R
+    dplyr::select(bart_flattened_transfers_variables) #see variables.R
 
   return(bart_xfer_df)
 }
@@ -128,39 +125,39 @@ Build_Database <- function(df_row,data_dir,
 
   # Summarise the transfers for typical weekdays
   typical.weekday <- transfers_df %>%
-    mutate(from_AgencyName = str_trim(from_AgencyName)) %>%
-    mutate(to_AgencyName   = str_trim(to_AgencyName)) %>%
-    filter(CircadianDayOfWeek > 2) %>%
-    filter(CircadianDayOfWeek < 6) %>%
-    mutate(key_time = ifelse(!is.na(Diff_Min_TagOff_to_TagOn), Diff_Min_TagOff_to_TagOn, Diff_Min_TagOn_to_TagOn)) %>%
-    select(Year, Month, CircadianDayOfWeek, RandomWeekID, from_AgencyName, to_AgencyName, key_time)
+    dplyr::mutate(from_AgencyName = str_trim(from_AgencyName)) %>%
+    dplyr::mutate(to_AgencyName   = str_trim(to_AgencyName)) %>%
+    dplyr::filter(CircadianDayOfWeek > 2) %>%
+    dplyr::filter(CircadianDayOfWeek < 6) %>%
+    dplyr::mutate(key_time = ifelse(!is.na(Diff_Min_TagOff_to_TagOn), Diff_Min_TagOff_to_TagOn, Diff_Min_TagOn_to_TagOn)) %>%
+    dplyr::select(Year, Month, CircadianDayOfWeek, RandomWeekID, from_AgencyName, to_AgencyName, key_time)
 
   transfer.data <- inner_join(typical.weekday, transfer_rules_df, by = c("from_AgencyName", "to_AgencyName"))
 
   transfer.sum <- transfer.data %>%
-    filter(key_time <= max_time) %>%
-    select(-key_time, -max_time) %>%
-    group_by(Year, Month, CircadianDayOfWeek, RandomWeekID, from_AgencyName, to_AgencyName) %>%
+    dplyr::filter(key_time <= max_time) %>%
+    dplyr::select(-key_time, -max_time) %>%
+    dplyr::group_by(Year, Month, CircadianDayOfWeek, RandomWeekID, from_AgencyName, to_AgencyName) %>%
     summarise(sampled_transfers = n())
 
   # Join the transactions
   working.transactions <- transactions_df %>%
-    mutate(AgencyName = str_trim(AgencyName))
+    dplyr::mutate(AgencyName = str_trim(AgencyName))
 
   from_transactions <- working.transactions %>%
-    select(from_AgencyName = AgencyName, from_Agency_Sampled_Transactions = Sampled_Transactions, Year, Month, CircadianDayOfWeek, RandomWeekID)
+    dplyr::select(from_AgencyName = AgencyName, from_Agency_Sampled_Transactions = Sampled_Transactions, Year, Month, CircadianDayOfWeek, RandomWeekID)
 
   to_transactions <- working.transactions %>%
-    select(  to_AgencyName = AgencyName,   to_Agency_Sampled_Transactions = Sampled_Transactions, Year, Month, CircadianDayOfWeek, RandomWeekID)
+    dplyr::select(  to_AgencyName = AgencyName,   to_Agency_Sampled_Transactions = Sampled_Transactions, Year, Month, CircadianDayOfWeek, RandomWeekID)
 
   transfer.write <- left_join(transfer.sum,   from_transactions, by = c("Year", "Month", "CircadianDayOfWeek", "RandomWeekID", "from_AgencyName"))
   transfer.write <- left_join(transfer.write, to_transactions,   by = c("Year", "Month", "CircadianDayOfWeek", "RandomWeekID", "to_AgencyName"))
 
   # Estimate transfers & tranactions using the sample rate
   transfer.write <- transfer.write %>%
-    mutate(estimated_transfers = sampled_transfers / SAMPLING_RATE) %>%
-    mutate(estimated_from_agency_transactions = from_Agency_Sampled_Transactions / SAMPLING_RATE) %>%
-    mutate(estimated_to_agency_transactions   = to_Agency_Sampled_Transactions   / SAMPLING_RATE)
+    dplyr::mutate(estimated_transfers = sampled_transfers / SAMPLING_RATE) %>%
+    dplyr::mutate(estimated_from_agency_transactions = from_Agency_Sampled_Transactions / SAMPLING_RATE) %>%
+    dplyr::mutate(estimated_to_agency_transactions   = to_Agency_Sampled_Transactions   / SAMPLING_RATE)
 
   # Write to disk
   if (append_boolean) {
@@ -179,41 +176,41 @@ Make_to_from_plot <- function(transfer_df, a_string, b_string){
 
   # A to B
   a_to_b <- transfer_df %>%
-    mutate(from_AgencyName = str_trim(from_AgencyName)) %>%
-    mutate(to_AgencyName   = str_trim(to_AgencyName)) %>%
-    filter(from_AgencyName == a_string) %>%
-    filter(to_AgencyName   == b_string)
+    dplyr::mutate(from_AgencyName = str_trim(from_AgencyName)) %>%
+    dplyr::mutate(to_AgencyName   = str_trim(to_AgencyName)) %>%
+    dplyr::filter(from_AgencyName == a_string) %>%
+    dplyr::filter(to_AgencyName   == b_string)
 
   a_to_b <- a_to_b %>%
-    mutate(key_time = ifelse(!is.na(Diff_Min_TagOff_to_TagOn), Diff_Min_TagOff_to_TagOn, Diff_Min_TagOn_to_TagOn)) %>%
-    group_by(Year, Month, CircadianDayOfWeek, RandomWeekID, key_time) %>%
+    dplyr::mutate(key_time = ifelse(!is.na(Diff_Min_TagOff_to_TagOn), Diff_Min_TagOff_to_TagOn, Diff_Min_TagOn_to_TagOn)) %>%
+    dplyr::group_by(Year, Month, CircadianDayOfWeek, RandomWeekID, key_time) %>%
     summarise(transfers = n()) %>%
-    group_by(Year, Month, key_time) %>%
+    dplyr::group_by(Year, Month, key_time) %>%
     summarise(typical_weekdays = n(), median_transfers = median(transfers)) %>%
-    mutate(cumulative_median_transfers = cumsum(median_transfers)) %>%
-    select(Year, Month, key_time, cumulative_median_transfers) %>%
-    mutate(movement = paste(a_string," to ", b_string)) %>%
-    filter(key_time > 0) %>%
-    filter(key_time < 130)
+    dplyr::mutate(cumulative_median_transfers = cumsum(median_transfers)) %>%
+    dplyr::select(Year, Month, key_time, cumulative_median_transfers) %>%
+    dplyr::mutate(movement = paste(a_string," to ", b_string)) %>%
+    dplyr::filter(key_time > 0) %>%
+    dplyr::filter(key_time < 130)
 
   # B to A
   b_to_a <- transfer_df %>%
-    mutate(from_AgencyName = str_trim(from_AgencyName)) %>%
-    mutate(to_AgencyName   = str_trim(to_AgencyName)) %>%
-    filter(from_AgencyName == b_string) %>%
-    filter(to_AgencyName   == a_string)
+    dplyr::mutate(from_AgencyName = str_trim(from_AgencyName)) %>%
+    dplyr::mutate(to_AgencyName   = str_trim(to_AgencyName)) %>%
+    dplyr::filter(from_AgencyName == b_string) %>%
+    dplyr::filter(to_AgencyName   == a_string)
 
   b_to_a <- b_to_a %>%
-    mutate(key_time = ifelse(!is.na(Diff_Min_TagOff_to_TagOn), Diff_Min_TagOff_to_TagOn, Diff_Min_TagOn_to_TagOn)) %>%
-    group_by(Year, Month, CircadianDayOfWeek, RandomWeekID, key_time) %>%
+    dplyr::mutate(key_time = ifelse(!is.na(Diff_Min_TagOff_to_TagOn), Diff_Min_TagOff_to_TagOn, Diff_Min_TagOn_to_TagOn)) %>%
+    dplyr::group_by(Year, Month, CircadianDayOfWeek, RandomWeekID, key_time) %>%
     summarise(transfers = n()) %>%
-    group_by(Year, Month, key_time) %>%
+    dplyr::group_by(Year, Month, key_time) %>%
     summarise(typical_weekdays = n(), median_transfers = median(transfers)) %>%
-    mutate(cumulative_median_transfers = cumsum(median_transfers)) %>%
-    select(Year, Month, key_time, cumulative_median_transfers) %>%
-    mutate(movement = paste(b_string," to ", a_string)) %>%
-    filter(key_time > 0) %>%
-    filter(key_time < 130)
+    dplyr::mutate(cumulative_median_transfers = cumsum(median_transfers)) %>%
+    dplyr::select(Year, Month, key_time, cumulative_median_transfers) %>%
+    dplyr::mutate(movement = paste(b_string," to ", a_string)) %>%
+    dplyr::filter(key_time > 0) %>%
+    dplyr::filter(key_time < 130)
 
   # Merge and plot
   data.to_plot <- rbind(a_to_b, b_to_a)
