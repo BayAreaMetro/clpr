@@ -38,9 +38,12 @@ Example Usage
 
 Sample a day of transactions by user
 
+Note that date must be formatted as below for now. YYYY-MM-DD
+
 ```{r}
 rs <- connect_rs()
-transactions_tbl <- sample_day_of_transactions(rs,x,n_users=100)
+date <- "2016-04-25"
+transactions_tbl <- sample_day_of_transactions(rs,date,n_users=100)
 transactions_df <- as_tibble(transactions_tbl)
 ```
 
