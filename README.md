@@ -61,6 +61,16 @@ in_time_df <- spread_time_column(bart_od$time_of_previous, prefix="tag_on_")
 bart_od_nicetime <- cbind(bart_od,in_time_df,out_time_df)
 ```
 
+Pull a full day of transactions
+
+```{r}
+rs <- connect_rs()
+date <- "2016-04-25"
+transactions_tbl <- day_of_transactions(rs,date,n_users=100, drop_existing_table=FALSE)
+transactions_df <- as_tibble(transactions_tbl)
+```
+
+
 Background
 ==========
 
