@@ -29,6 +29,10 @@ If you [define environmental variables](https://stat.ethz.ch/R-manual/R-devel/li
 
 Otherwise, you'll have to connect to the db as you prefer. 
 
+Testing
+===========
+If you set environmental variables as above, you can run some of the (admittedly not complete) tests with Ctrl/Cmd + Shift + T or `devtools::test().`
+
 Example Usage
 ===========
 
