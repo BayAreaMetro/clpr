@@ -3,7 +3,7 @@ SORTKEY(cardid_anony,
         generationtime)
 AS SELECT ((generationtime) AT TIME ZONE 'UTC') AT TIME ZONE 'PST' as psttime,
           generationtime,
-          md5(applicationserialnumber) as cardid_anony,
+          FUNC_SHA1(applicationserialnumber) as cardid_anony,
           operatorid,
           vehicleid,
           routeid,

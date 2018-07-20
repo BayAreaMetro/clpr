@@ -5,13 +5,13 @@ library(stringr)
 #' @returns tr_df a dataframe of transactions with columns: from_bart, to_bart, from_not_bart, to_not_bart
 bart_identify <- function(tr_df) {
     tr_df <- tr_df %>%
-    group_by(cardid_anony) %>%
-    arrange(hour, minute) %>%
-    mutate(is_bart = operatorid==4,
-           from_bart = lag(operatorid)==4,
-           to_bart = lead(operatorid)==4,
-           exit_to_not_bart = (is_bart & from_bart & !to_bart),
-           entrance_from_not_bart = (is_bart & to_bart & !from_bart))
+      group_by(cardid_anony) %>%
+      arrange(hour, minute) %>%
+      mutate(is_bart = operatorid==4,
+             from_bart = lag(operatorid)==4,
+             to_bart = lead(operatorid)==4,
+             exit_to_not_bart = (is_bart & from_bart & !to_bart),
+             entrance_from_not_bart = (is_bart & to_bart & !from_bart))
     return(tr_df)
 }
 
@@ -23,6 +23,7 @@ bart_lag_and_lead_metadata <- function(tr_df) {
       group_by(cardid_anony) %>%
       arrange(hour, minute) %>%
       mutate(timediff = abs(difftime(psttime, lag(psttime),units="mins")),
+             time_of_previous = lag(psttime),
              transfer_from_time = round(timediff,2),
              transfer_to_operator_time = round(lead(timediff),2),
              transfer_to_not_bart = (exit_to_not_bart & transfer_to_operator_time<60),

@@ -25,7 +25,7 @@ descriptive_tables <- function(){
 #'@importFrom here here
 fares_for_day <- function(partition_time="10:00:00",
                           start_date="2016-01-01",
-                          drop_existing_table=FALSE) {
+                          drop_existing_table=TRUE) {
   con <- connect_rs()
 
   end_date = as.Date(start_date) + 1
@@ -123,6 +123,7 @@ sample_user_ids <- function(transactions_day, n_users) {
 sample_user_transactions <- function(rs, faretable_name, n_users) {
   transactions_day <- dplyr::tbl(rs,
     dbplyr::in_schema("clipper_days",faretable_name))
+
 
   sample_ids <- sample_user_ids(transactions_day, n=n_users)
 
