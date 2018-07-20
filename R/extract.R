@@ -110,7 +110,7 @@ sample_user_transactions <- function(rs, faretable_name, n_users) {
 transactions_and_devices_for_day <- function(rs,faretable_name,device_table_name,users=users) {
   transactions_day_user_sample <- sample_user_transactions(faretable_name)
 
-  devices_day_sample <- tbl(rs,dplyr::in_schema("clipper_days",device_table_name))
+  devices_day_sample <- tbl(rs,dbplyr::in_schema("clipper_days",device_table_name))
 
   transactions_simple_devices <- left_join(transactions_day_user_sample,
                                            devices_day_sample,
@@ -122,7 +122,7 @@ transactions_and_devices_for_day <- function(rs,faretable_name,device_table_name
                                                   "deviceserialnumber"),
                                            suffix=c("_tr","_dvc"))
 
-  device_locations <- tbl(rs,dplyr::in_schema("clipper","devicelocations")) %>%
+  device_locations <- tbl(rs,dbplyr::in_schema("clipper","devicelocations")) %>%
     select(installdate,modelid,vehicleid,placeid,locationname,sublocation,deviceid) %>%
     rename(vehicleid_dvcl = vehicleid)
 
@@ -152,9 +152,9 @@ make_human_readable_with_devices <- function(rs,tr_tbl) {
 
 #' @importFrom dplyr left_join
 make_transactions_human_readable <- function(rs,tr_tbl) {
-  participants <- tbl(rs, dplyr::in_schema("clipper","participants"))
-  routes <- tbl(rs, dplyr::in_schema("clipper","routes"))
-  locations <- tbl(rs, dplyr::in_schema("clipper","locations"))
+  participants <- tbl(rs, dbplyr::in_schema("clipper","participants"))
+  routes <- tbl(rs, dbplyr::in_schema("clipper","routes"))
+  locations <- tbl(rs, dbplyr::in_schema("clipper","locations"))
 
   tr_tbl$destinationlocation <- as.integer(tr_tbl$destinationlocation)
   tr_tbl$originlocation <- as.integer(tr_tbl$originlocation)
