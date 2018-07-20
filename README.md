@@ -51,6 +51,7 @@ Use lubridate to spread the timestamp column into day of year, month, hour, and 
 ```{r}
 out_time_df <- spread_time_column(bart_od$transaction_time, prefix="tag_out_")
 in_time_df <- spread_time_column(bart_od$time_of_previous, prefix="tag_on_")
+bart_od_nicetime <- cbind(bart_od,in_time_df,out_time_df)
 ```
 
 Background
