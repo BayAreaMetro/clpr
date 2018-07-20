@@ -42,7 +42,7 @@ descriptive_tables <- function(){
 #'@importFrom here here
 fares_for_day <- function(partition_time="10:00:00",
                           start_date="2016-01-01",
-                          drop_existing_table=TRUE) {
+                          drop_existing_table=FALSE) {
   con <- connect_rs()
 
   end_date = as.Date(start_date) + 1
