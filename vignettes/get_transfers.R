@@ -26,14 +26,6 @@ l_dfs <- lapply(l_dfs,function(x){select(x,-securitymoduleid)})
 
 l_dfs2 <- lapply(l_dfs,function(x){try(bart_transactions_as_transfers(x))})
 
-
-nicetime <- function(df1){
-  out_time_df <- spread_time_column(df1$transaction_time, prefix="tag_on_")
-  in_time_df <- spread_time_column(df1$time_of_previous, prefix="tag_out_")
-
-  bart_od3 <- cbind(df1,in_time_df,out_time_df)
-}
-
 l_dfs3 <- lapply(l_dfs2,function(x){try(nicetime(x))})
 
 l_dfs4 <- lapply(l_dfs3,function(x){
@@ -42,4 +34,13 @@ l_dfs4 <- lapply(l_dfs3,function(x){
                                             .algo = "crc32",
                                             .seed = 1)
   )
+  return(x)
 })
+
+for(i in seq_along(dates)){
+  filename <- paste0("clpr-bart-od",dates[i])
+  writexl::write_xlsx(l_dfs[i],filename)
+}
+
+
+

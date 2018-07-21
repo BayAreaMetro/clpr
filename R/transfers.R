@@ -67,6 +67,15 @@ bart_transactions_per_user <- function(tr_df) {
     return(tr_df)
 }
 
+
+nicetime <- function(df1){
+  out_time_df <- spread_time_column(df1$transaction_time, prefix="tag_on_")
+  in_time_df <- spread_time_column(df1$time_of_previous, prefix="tag_out_")
+
+  bart_od3 <- cbind(df1,in_time_df,out_time_df)
+}
+
+
 #' Spreads multiple transactions across columns into one-row-per-bart-trip (with a focus on transfers in and out)
 #'
 #' @param tr_df a sample of transactions, effectively from the raw sfofaretransactions table, joined to other tables
