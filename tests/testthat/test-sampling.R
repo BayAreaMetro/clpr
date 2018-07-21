@@ -1,7 +1,7 @@
 context("db sampling is working")
 library(clpr)
 
-#source("/home/shared/.cred/rs.R")
+#source("YOUR_CREDENTIALS_FILE")
 library(DBI)
 library(RPostgres)
 library(dbplyr)
@@ -9,8 +9,6 @@ library(dplyr)
 library(readr)
 library(dplyr)
 library(lubridate)
-
-end   <- as.Date("03-31-16",format="%m-%d-%y")
 
 test_that("we can connect to the db", {
   rs <- connect_rs()

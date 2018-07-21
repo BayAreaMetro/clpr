@@ -1,4 +1,13 @@
+#' Sample a day of transactions for a given number of users
+#'
+#' @param rs RPostgres connection to database
+#' @param date1 date to query
+#' @param n_users number of users
+#' @param drop_existing_table whether to drop an existing partitioned table for this date
+#' @return tbl a dbplyr/dplyr tbl table
+#'
 #'@importFrom lubridate yday wday ymd
+#'@importFrom dplyr %>%
 sample_day_of_transactions <- function(rs,date1, n_users, drop_existing_table=FALSE) {
   faretable_name <- fares_for_day(start_date=date1, drop_existing_table=drop_existing_table)
   faretable_sample <- sample_user_transactions(rs,faretable_name,n=n_users)
@@ -6,8 +15,16 @@ sample_day_of_transactions <- function(rs,date1, n_users, drop_existing_table=FA
   return(human_readable_result_tbl)
 }
 
+#' Pull all transactions for a given number of users
+#'
+#' @param rs RPostgres connection to database
+#' @param date1 date to query
+#' @param drop_existing_table whether to drop an existing partitioned table for this date
+#' @return tbl a dbplyr/dplyr tbl table
+#'
 #'@importFrom lubridate yday wday ymd
-day_of_transactions <- function(rs,date1, n_users, drop_existing_table=FALSE) {
+#'@importFrom dplyr %>%
+day_of_transactions <- function(rs,date1, drop_existing_table=FALSE) {
   faretable_name <- fares_for_day(start_date=date1, drop_existing_table=drop_existing_table)
   transactions_day <- dplyr::tbl(rs,
                                  dbplyr::in_schema("clipper_days",faretable_name))
@@ -15,8 +32,12 @@ day_of_transactions <- function(rs,date1, n_users, drop_existing_table=FALSE) {
   return(human_readable_result_tbl)
 }
 
+#'Get descriptive tables for transactions
 #'
-#'@param con a connection to the redshift db
+#'Results can be joined with transactions to make them more legible.
+#'Expects database to be configured as for connect_rs()
+#'
+#'@return a list of dbplyr/dplyr tbl tables: operators, routes, locations
 #'@export
 #'@importFrom dbplyr in_schema
 #'@importFrom dplyr tbl
@@ -32,14 +53,19 @@ descriptive_tables <- function(){
   return(dl)
 }
 
+#'Partition the transaction table by travel survey/model day (starting at 3 am)
 #'
-#'@param
-#'@returns a list of transactions (devices and)
+#'Creates a table for the day in the db on the clipper_day schema and returns the name of it.
+#'Using in-database functions, returns card_id as a SHA_1 hash and time zone to PST.
+#'
+#'@param partition_time time to use as the start of a "day." defaults to 3 AM PST (10 AM UTC)
+#'@param start_date date this is the start date for the day (starting at 3 am at the partition time above). note that the day may "end" at 3 am the next day.
+#'@param drop_existing_table whether to drop an existing partitioned table for this date
+#'@returns the name of the table on the clipper_days schema.
 #'@export
 #'@importFrom dbplyr
 #'@importFrom dplyr tbl
 #'@importFrom readr read_file
-#'@importFrom here here
 fares_for_day <- function(partition_time="10:00:00",
                           start_date="2016-01-01",
                           drop_existing_table=FALSE) {

@@ -8,35 +8,38 @@ library(dplyr)
 library(lubridate)
 library(clpr)
 
-start <- as.Date("01-01-16",format="%m-%d-%y")
-end   <- as.Date("12-31-16",format="%m-%d-%y")
+start <- as.Date("10-02-16",format="%m-%d-%y")
+end   <- as.Date("10-08-16",format="%m-%d-%y")
 
-dates <- sample(seq(start, end, by="day"),1)
+dates <- seq(start, end, by="day")
 
 source("~/.keys/rs.R")
 rs <- connect_rs()
 
 l_dfs <- lapply(dates, function(x) {
-    sample_day_of_transactions(rs,x,n_users=10000) %>%
+  day_of_transactions(rs,x) %>%
     as_tibble() %>%
     mutate(date=x)
-  })
+})
 
-sample_df <- bind_rows(l_dfs)
+l_dfs <- lapply(l_dfs,function(x){select(x,-securitymoduleid)})
 
-bart_od <- bart_transactions_as_transfers(sample_df)
+l_dfs2 <- lapply(l_dfs,function(x){try(bart_transactions_as_transfers(x))})
 
-bart_od <- bart_od %>%
-  select(bart_flattened_transfers_variables) #see variables.R
 
-out_time_df <- spread_time_column(bart_od$transaction_time, prefix="tag_on_")
-in_time_df <- spread_time_column(bart_od$time_of_previous, prefix="tag_out_")
+nicetime <- function(df1){
+  out_time_df <- spread_time_column(df1$transaction_time, prefix="tag_on_")
+  in_time_df <- spread_time_column(df1$time_of_previous, prefix="tag_out_")
 
-bart_od <- cbind(bart_od,in_time_df,out_time_df)
+  bart_od3 <- cbind(df1,in_time_df,out_time_df)
+}
 
-#anonymize again
-bart_od$cardid_anony <- anonymizer::anonymize(bart_od$cardid_anony,
-                                  .algo = "crc32",
-                                  .seed = 1)
+l_dfs3 <- lapply(l_dfs2,function(x){try(nicetime(x))})
 
-write_csv(bart_od,here::here("data-raw-local/bart_od.csv"))
+l_dfs4 <- lapply(l_dfs3,function(x){
+  try(
+    x$cardid_anony <- anonymizer::anonymize(x$cardid_anony,
+                                            .algo = "crc32",
+                                            .seed = 1)
+  )
+})
