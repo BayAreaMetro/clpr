@@ -36,8 +36,8 @@ l_dfs4 <- lapply(l_dfs3,function(x){
 })
 
 for(i in seq_along(dates)){
-  filename <- paste0("clpr-bart-od",dates[i])
-  writexl::write_xlsx(l_dfs[i],filename)
+  filename <- paste0("clpr-bart-od",dates[i],".xlsx")
+  try(writexl::write_xlsx(l_dfs[i],filename))
 }
 
 
