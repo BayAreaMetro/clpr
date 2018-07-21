@@ -22,8 +22,6 @@ l_dfs <- lapply(dates, function(x) {
     mutate(date=x)
 })
 
-l_dfs <- lapply(l_dfs,function(x){select(x,-securitymoduleid)})
-
 l_dfs2 <- lapply(l_dfs,function(x){try(bart_transactions_as_transfers(x))})
 
 l_dfs3 <- lapply(l_dfs2,function(x){try(nicetime(x))})
