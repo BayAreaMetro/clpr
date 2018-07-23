@@ -143,48 +143,6 @@ sample_user_transactions <- function(rs, faretable_name, n_users) {
   return(transactions_day_user_sample)
 }
 
-transactions_and_devices_for_day <- function(rs,faretable_name,device_table_name,users=users) {
-  transactions_day_user_sample <- sample_user_transactions(faretable_name)
-
-  devices_day_sample <- tbl(rs,dbplyr::in_schema("clipper_days",device_table_name))
-
-  transactions_simple_devices <- left_join(transactions_day_user_sample,
-                                           devices_day_sample,
-                                           by=c("sequencenumber"=
-                                                  "sequencenumber",
-                                                "generationtime"=
-                                                  "generationtime",
-                                                "deviceserialnumber"=
-                                                  "deviceserialnumber"),
-                                           suffix=c("_tr","_dvc"))
-
-  device_locations <- tbl(rs,dbplyr::in_schema("clipper","devicelocations")) %>%
-    select(installdate,modelid,vehicleid,placeid,locationname,sublocation,deviceid) %>%
-    rename(vehicleid_dvcl = vehicleid)
-
-  recent_device_locations <- device_locations %>%
-    group_by(deviceid) %>% dplyr::filter(installdate < "2017-01-01") %>%
-    top_n(1,installdate)
-
-  transactions_simple_devices_locations <- left_join(transactions_simple_devices,
-                                                     recent_device_locations,
-                                                     by=c("deviceserialnumber"=
-                                                            "deviceid"),
-                                                     suffix=c("","_dvcl"))
-
-  return(transactions_simple_devices_locations)
-}
-
-make_human_readable_with_devices <- function(rs,tr_tbl) {
-  tr2 <- user_sample_tbl %>% select(select_vars1)
-  tr2 <- tr2 %>% rename("locationname.device"="locationname")
-  transactions_simple <- tr2
-  transactions_simple_tbl <- make_transactions_human_readable(rs,transactions_simple)
-  transactions_simple_df <- transactions_simple_tbl %>%
-    select(select_device_vars) %>%
-    as_tibble(transactions_simple)
-  return(transactions_simple_df)
-}
 
 #' @importFrom dplyr left_join
 make_transactions_human_readable <- function(rs,tr_tbl) {
@@ -241,50 +199,6 @@ make_transactions_human_readable <- function(rs,tr_tbl) {
     rename("locationname.destination"="locationname")
   return(tr4)
 }
-
-#'Get the device transactions for a day
-#'This function has been deprecated and should be used with care
-#'
-devices_for_day <- function(partition_time="10:00:00",
-                            start_date="2016-01-01",
-                            drop_existing_table=FALSE) {
-  con <- connect_rs()
-  end_date = as.Date(start_date) + 1
-  date_title <- gsub("-", "_",start_date)
-  tblname <- paste0("devices_",date_title)
-
-  if(drop_existing_table==TRUE){
-    drop_tbl <- glue::glue('DROP TABLE IF EXISTS "clipper_days"."devices_{date_title}";',date_title = date_title)
-    dbExecute(con, drop_tbl)
-  }
-
-  base_sql_path <- system.file('sql', package='clpr')
-  day_tables_sql <- readr::read_file(paste0(base_sql_path,'/day_devices.sql'))
-  day_tables_sql <- glue::glue(day_tables_sql,
-                               date_title = date_title,
-                               start_date = start_date,
-                               end_date = end_date)
-  result = tryCatch({
-    dbExecute(con, day_tables_sql)
-  }, error = function(e) {
-  })
-  return(tblname)
-}
-
-#' Sample transactions in a day with corresponding device table
-#' This function has been deprecated and should be used with care
-#'
-#'@importFrom lubridate yday wday ymd
-#'
-sample_a_day_with_devices <- function(rs,date1, users) {
-  faretable_name <- fares_for_day(start_date=date1)
-  device_table_name <- devices_for_day(start_date=date1)
-  transactions_and_devices_tbl <- transactions_and_devices_for_day(rs,faretable_name,device_table_name, users=users)
-  human_readable_result_tbl <- make_human_readable_with_devices(rs,transactions_and_devices_tbl)
-  human_readable_result_tbl <- parse_clipper_time(human_readable_result_tbl, date1)
-  return(human_readable_result_tbl)
-}
-
 
 #' @importFrom odbc dbClearResult dbDisconnect dbSendQuery
 
