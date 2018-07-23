@@ -9,7 +9,7 @@
 clpr
 ====
 
-This is an [R](https://en.wikipedia.org/wiki/R_(programming_language) [package](http://kbroman.org/pkg_primer/) with analysis utilities and approaches for a data set of obscured and anonymized Clipper smart card transactions.
+This is an [R](https://en.wikipedia.org/wiki/R_(programming_language)  [package](http://kbroman.org/pkg_primer/) with analysis utilities and approaches for a data set of obscured and anonymized Clipper smart card transactions.
 
 Goal
 ====
