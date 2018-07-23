@@ -9,7 +9,23 @@
 clpr
 ====
 
-This is an R package with analysis utilities and approaches for a data set of obscured and anonymized Clipper smart card transactions.
+This is an [R](https://en.wikipedia.org/wiki/R_(programming_language) [package](http://kbroman.org/pkg_primer/) with analysis utilities and approaches for a data set of obscured and anonymized Clipper smart card transactions.
+
+Goal
+====
+
+This package can be used to support documentation and collaboration around the analysis of anonymized Clipper trip data with extensible, open-source, industry-standard data analysis tools like [RStudio](https://en.wikipedia.org/wiki/RStudio).
+
+It can be used to help answer questions like the following:
+
+- What are Station-to-Station Tabulations for Fixed-Guideway systems? 
+- What are Major Transfer Movements? 
+
+    BART to/from MUNI
+    CALTRAIN to/from MUNI
+    CALTRAIN to/from SCVTA
+    Ferry Service to/from MUNI or BART
+    The above movements are (ideally) station and route specific
 
 Installation
 ============
@@ -22,6 +38,8 @@ devtools::install_github('bayareametro/clpr')
 ```
 
 This package has a number of dependencies, the major ones being the `tidyverse` and `RPostgres`
+
+We've tested it on an MTC Windows 10 machine and Mac OS Sierra and it seems to work on both, though we need to do more testing. 
 
 Setup
 ==========
@@ -70,16 +88,15 @@ transactions_tbl <- day_of_transactions(rs,date,n_users=100, drop_existing_table
 transactions_df <- as_tibble(transactions_tbl)
 ```
 
+Contributing
+============
 
-Background
-==========
+You can contribute code, data, or questions. Please feel free to [open an issue](https://github.com/BayAreaMetro/clpr/issues) with any questions about how to use the package.  
+
+2014 By-Operator Transfer Summary 
+====
 
 To help validate the MTC travel model, MTC (David Ory) summarized successive movements made by a single Clipper card within [pre-defined time windows](data-raw/transfer_rules_database.csv). We refer to these as transfers.
-
-In this repository, we've moved the scripts and markdown documents around to fit within R Packaging specifications in order to manage maintenance and collaboration around these scripts going forward.
-
-Goal
-====
 
 The main scripts are eponymous. They [extract-data](vignettes/extract-data.Rmd), [create interactive pair-wise by tag time difference plots](vignettes/To-and-From-Interactive.Rmd), and [build a database of transfer summaries](vignettes/Build-Transfer-Database.Rmd).
 
