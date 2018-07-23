@@ -18,14 +18,15 @@ This package can be used to support documentation and collaboration around the a
 
 It can be used to help answer questions like the following:
 
-- What are Station-to-Station Tabulations for Fixed-Guideway systems? 
-- What are Major Transfer Movements? 
+1. What are Station-to-Station Tabulations for Fixed-Guideway systems? 
+2. What are Major Transfer Movements? 
 
-    BART to/from MUNI
-    CALTRAIN to/from MUNI
-    CALTRAIN to/from SCVTA
-    Ferry Service to/from MUNI or BART
-    The above movements are (ideally) station and route specific
+For example:
+- BART to/from MUNI
+- CALTRAIN to/from MUNI
+- CALTRAIN to/from SCVTA
+- Ferry Service to/from MUNI or BART
+- The above movements are (ideally) station and route specific
 
 Installation
 ============
