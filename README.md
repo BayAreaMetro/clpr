@@ -23,9 +23,7 @@ It can be used to help answer questions like the following:
 
 For example:
 - BART to/from MUNI
-- CALTRAIN to/from MUNI
-- CALTRAIN to/from SCVTA
-- Ferry Service to/from MUNI or BART
+- Ferry Service to BART
 - The above movements are (ideally) station and route specific
 
 Installation
