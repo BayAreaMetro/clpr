@@ -17,9 +17,7 @@ source("~/.keys/rs.R")
 rs <- connect_rs()
 
 l_dfs <- lapply(dates, function(x) {
-  day_of_transactions(rs,x) %>%
-    as_tibble() %>%
-    mutate(date=x)
+  day_of_transactions(rs,x)
 })
 
 l_dfs <- lapply(l_dfs,function(x){select(x,transaction_transfer_vars)})

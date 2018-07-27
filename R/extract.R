@@ -7,12 +7,15 @@
 #' @return tbl a dbplyr/dplyr tbl table
 #'
 #'@importFrom lubridate yday wday ymd
-#'@importFrom dplyr %>%
+#'@importFrom dplyr %>% db_drop_table
 sample_day_of_transactions <- function(rs,date1, n_users, drop_existing_table=FALSE) {
-  faretable_name <- fares_for_day(start_date=date1, drop_existing_table=drop_existing_table)
+  faretable_name <- fares_for_day(start_date=date1,
+                                  drop_existing_table=drop_existing_table)
   faretable_sample <- sample_user_transactions(rs,faretable_name,n=n_users)
   human_readable_result_tbl <- make_transactions_human_readable(rs,faretable_sample)
-  return(human_readable_result_tbl)
+  human_readable_result_df <- human_readable_result_tbl %>% as_tibble()
+  dplyr::db_drop_table(rs, in_schema("ctp",faretable_name))
+  return(human_readable_result_df)
 }
 
 #' Pull all transactions for a given number of users
@@ -24,12 +27,15 @@ sample_day_of_transactions <- function(rs,date1, n_users, drop_existing_table=FA
 #'
 #'@importFrom lubridate yday wday ymd
 #'@importFrom dplyr %>%
+#'@importFrom dplyr %>% db_drop_table
 day_of_transactions <- function(rs,date1, drop_existing_table=FALSE) {
   faretable_name <- fares_for_day(start_date=date1, drop_existing_table=drop_existing_table)
   transactions_day <- dplyr::tbl(rs,
-                                 dbplyr::in_schema("clipper_days",faretable_name))
+                                 dbplyr::in_schema("ctp",faretable_name))
   human_readable_result_tbl <- make_transactions_human_readable(rs,transactions_day)
-  return(human_readable_result_tbl)
+  human_readable_result_df <- human_readable_result_tbl %>% as_tibble()
+  dplyr::db_drop_table(rs, in_schema("ctp",faretable_name))
+  return(human_readable_result_df)
 }
 
 #'Get descriptive tables for transactions
@@ -73,11 +79,6 @@ fares_for_day <- function(partition_time="10:00:00",
 
   end_date = as.Date(start_date) + 1
   date_title <- gsub("-", "_",start_date)
-
-  if(drop_existing_table==TRUE){
-    drop_tbl <- glue::glue('DROP TABLE IF EXISTS "clipper_days"."fares_{date_title}";',date_title = date_title)
-    dbExecute(con, drop_tbl)
-  }
 
   base_sql_path <- system.file('sql', package='clpr')
   day_tables_sql <- readr::read_file(paste0(base_sql_path,'/day_fares.sql'))
@@ -132,13 +133,13 @@ sample_user_ids <- function(transactions_day, n_users) {
 #'@importFrom dplyr tbl
 sample_user_transactions <- function(rs, faretable_name, n_users) {
   transactions_day <- dplyr::tbl(rs,
-    dbplyr::in_schema("clipper_days",faretable_name))
+    dbplyr::in_schema("ctp",faretable_name))
 
 
   sample_ids <- sample_user_ids(transactions_day, n=n_users)
 
   transactions_day_user_sample <- dplyr::tbl(rs,
-    dbplyr::in_schema("clipper_days",faretable_name)) %>%
+    dbplyr::in_schema("ctp",faretable_name)) %>%
     dplyr::filter(cardid_anony %in% sample_ids)
   return(transactions_day_user_sample)
 }

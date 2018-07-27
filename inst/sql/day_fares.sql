@@ -1,4 +1,4 @@
-create table clipper_days.fares_{date_title}
+create table ctp.fares_{date_title}
 SORTKEY(cardid_anony,
         generationtime)
 AS SELECT ((generationtime) AT TIME ZONE 'UTC') AT TIME ZONE 'PST' as transaction_time,

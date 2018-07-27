@@ -1,5 +1,5 @@
 connect_rs <- function() {
-  rs <- dbConnect(RPostgres::Postgres(),
+  rs <- odbc::dbConnect(RPostgres::Postgres(),
                   "user" = Sys.getenv("RSUSER"),
                   "password" = Sys.getenv("RSPASSWORD"),
                   "dbname" = Sys.getenv("RSDB"),
