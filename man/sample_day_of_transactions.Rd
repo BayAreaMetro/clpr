@@ -4,8 +4,7 @@
 \alias{sample_day_of_transactions}
 \title{Sample a day of transactions for a given number of users}
 \usage{
-sample_day_of_transactions(rs, date1, n_users,
-  drop_existing_table = FALSE)
+sample_day_of_transactions(rs, date1, n_users, drop_existing_table = FALSE)
 }
 \arguments{
 \item{rs}{RPostgres connection to database}
