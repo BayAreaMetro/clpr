@@ -26,7 +26,9 @@ AS SELECT ((generationtime) AT TIME ZONE 'UTC') AT TIME ZONE 'PST' as transactio
           deviceserialnumber,
           sequencenumber,
           applicationserialnumber,
-          destinationlocation
+          destinationlocation,
+          purseamount,
+          pursebalance
 FROM clipper.sfofaretransaction
     WHERE generationtime > '{start_date} {partition_time}'
     AND generationtime < '{end_date} {partition_time}';
