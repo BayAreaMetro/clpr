@@ -12,7 +12,7 @@ The primary goal of this directory is to:
 
 ## Entity Relationship Diagram
 
-- ![](clipper_data_store_erd.png)
+![](clipper_data_store_erd.png)
 
 ## Tables
 
