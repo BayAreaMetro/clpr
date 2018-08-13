@@ -1,7 +1,7 @@
 create table ctp.fares_{date_title}
 SORTKEY(cardid_anony,
         generationtime)
-AS SELECT ((generationtime) AT TIME ZONE 'UTC') AT TIME ZONE 'PST' as transaction_time,
+AS SELECT convert_timezone('US/Pacific', generationtime) as transaction_time,
           generationtime,
           FUNC_SHA1(applicationserialnumber) as cardid_anony,
           operatorid,
