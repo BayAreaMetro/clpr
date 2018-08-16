@@ -1,9 +1,9 @@
 --=======================================================================================================
---This query subset transactions to 1 travel model day. 
---It takes parameters for start_day and end_day and the time at which the day should be partitioned
+--This query creates a table of a subset of transactions for 1 day. 
+--It takes parameters for start_day and end_day and the time at which the day should be partitioned (e.g. 3 am)
 --It also casts the UTC timestamp on the data to PST, using a function which accounts 
 --for daylight savings time
---an example use of this query r is here:
+--an example use of this query (in R) is here:
 --https://github.com/BayAreaMetro/clpr/blob/d84eb0a39124ccdacd98badfb692894b4c4b98ae/R/extract.R#L84
 --=======================================================================================================
 create table ctp.fares_{date_title}
