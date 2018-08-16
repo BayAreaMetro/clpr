@@ -1,7 +1,7 @@
 
 -   [clpr](#clpr)
 -   [Installation](#installation)
--   [Background](#background)
+-   [Usage](#example-usage)
 -   [Goal](#goal)
 -   [Vignettes/Examples](#vignettesexamples)
 -   [Resulting Data](#resulting-data)
