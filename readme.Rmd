@@ -87,6 +87,18 @@ transactions_tbl <- day_of_transactions(rs,date,n_users=100, drop_existing_table
 transactions_df <- as_tibble(transactions_tbl)
 ```
 
+Combine transactions so each row reflects a complete ride
+
+```{r}
+complete_rides <- drop_tagons(transactions_df)
+```
+
+Create a dataframe summarizing transfers within a given time window (in minutes)
+
+```{r}
+transfer_df <- create_transfer_df(complete_rides, 120)
+```
+
 Contributing
 ============
 
