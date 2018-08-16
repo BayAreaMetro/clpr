@@ -1,11 +1,3 @@
-
--   [clpr](#clpr)
--   [Goal](#goal)
--   [Installation](#installation)
--   [Usage](#example-usage)
--   [Vignettes/Examples](#vignettesexamples)
--   [Resulting Data](#resulting-data)
-
 clpr
 ====
 
