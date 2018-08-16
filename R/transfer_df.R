@@ -1,5 +1,3 @@
-#' This is an R script to create a table with transfer information for all combinations of operators for a given time window
-#'
 #' Adds column to indicate a transfer under given time windows
 #' @param tr_df a dataframe of transactions
 #' @param mins time period to qualify as a transfer (in minutes)
@@ -7,6 +5,7 @@
 identify_transfer_for_time <- function(tr_df, mins) {
   tr_df <- tr_df %>%
     clpr::drop_tagons() %>%
+    dplyr::filter(!is.na(participantname.transfer)) %>%
     dplyr::group_by(cardid_anony) %>%
     dplyr::arrange(transaction_time) %>%
     dplyr::mutate(time_from_prev_tagon =
@@ -25,14 +24,13 @@ identify_transfer_for_time <- function(tr_df, mins) {
 create_transfer_df <- function(tr_df, mins) {
   transfer_df <- tr_df %>%
   identify_transfer_for_time(mins) %>%
-  dplyr::group_by(participantname, participantname.transfer) %>%
-  summarise(from_operator_id = mean(transferoperator),
-              to_operator_id = mean(operatorid),
-              num_trips = n(),
+  dplyr::filter(productcategory == 1) %>%
+  dplyr::group_by(participantname.transfer, participantname) %>%
+  summarise(from_operator_id = as.integer(mean(transferoperator)),
+              to_operator_id = as.integer(mean(operatorid)),
               num_transfers = sum(is_transfer),
-              ratio_transfers = mean(is_transfer),
-              num_discounted = sum(transferdiscountflag),
-              ratio_discounted = sum(transferdiscountflag)/sum(is_transfer))
+              num_discounted = sum(transferdiscountflag[is_transfer==1]),
+              transfer_revenue = sum(purseamount[is_transfer==1]))
   return(transfer_df)
 }
 
