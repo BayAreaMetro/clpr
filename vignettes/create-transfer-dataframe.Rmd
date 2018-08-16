@@ -1,0 +1,48 @@
+---
+title: "Get summary data of transfers for given time window"
+output: 
+  github_document:
+    toc: true
+---
+## Goal
+
+Get revenue and count summaries of transfers for a given time window.
+
+## Methodology 
+
+```{r, message=FALSE, warning=FALSE, results='hide'}
+library(clpr)
+library(dplyr)
+library(readr)
+library(lubridate)
+source('~/Documents/connect_db.R')
+rs <- connect_rs()
+```
+
+Load a sample of transactions.
+
+```{r}
+tr_df <- sample_day_of_transactions(rs, '2016-09-17', 10)
+head(tr_df)
+```
+
+Make each row reflect a complete ride.
+
+```{r}
+tr_df <- drop_tagons(tr_df)
+head(tr_df)
+```
+
+Create a dataframe summarizing transfers.
+
+```{r}
+transfer_df <- create_transfer_df(tr_df)
+head(transfer_df)
+```
+
+## Outcome
+```{r}
+transfer_df
+```
+
+
