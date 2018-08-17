@@ -17,5 +17,3 @@ The primary goal of this directory is to:
 ## Tables
 
 - [sfofaretransaction](sfofaretransaction.md)
-
-# Project Documentation
