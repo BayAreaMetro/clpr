@@ -18,9 +18,9 @@ It can be used to help answer questions like the following:
 2. What are Major Transfer Movements? 
 
 For example:
-- BART to/from MUNI
-- Ferry Service to BART
-- The above movements are (ideally) station and route specific
+* BART to/from MUNI
+* Ferry Service to BART
+* The above movements are (ideally) station and route specific
 
 Installation
 ============
@@ -67,7 +67,7 @@ transactions_tbl <- sample_day_of_transactions(rs,date,n_users=100)
 transactions_df <- as_tibble(transactions_tbl)
 ```
 
-First, lets use the `drop_tagons` function to change the unit of observation from transactions to rides, where a ride is a ride on an operator. 
+First, let's use the `drop_tagons` function to change the unit of observation from transactions to rides, where a ride is a ride on an operator. 
 
 ```{r}
 rides_df <- drop_tagons(transactions_df)
@@ -86,9 +86,9 @@ Alternatively, we can use the `bart_transactions_as_transfers` function to chang
 bart_od <- bart_transactions_as_transfers(transactions_df)
 ```
 
-The outcome includes the time of the previous transaction to BART tag-on. For example, a user tagged off of the ferry at 7:05 and then onto bart at 7:20. Or, a user tagged onto an SF Muni bus at 7:00 and then onto bart at 7:30. It also includes the time they tagged onto the following ride. 
+The outcome includes the time of the previous transaction to BART tag-on. For example, a user tagged off of the ferry at 7:05 and then onto BART at 7:20. Or, a user tagged onto an SF Muni bus at 7:00 and then onto BART at 7:30. It also includes the time they tagged onto the following ride. 
 
-You can use use the convenience function `spread_time_column` to spread the timestamp column into day of year, month, hour, and minute integers. 
+We can use the convenience function `spread_time_column` to spread the timestamp column into day of year, month, hour, and minute integers. 
 
 ```{r, message=FALSE, warning=FALSE, results='hide'}
 out_time_df <- spread_time_column(bart_od$transaction_time, prefix="tag_out_")
@@ -96,7 +96,7 @@ in_time_df <- spread_time_column(bart_od$time_of_previous, prefix="tag_on_")
 bart_od_nicetime <- cbind(bart_od,in_time_df,out_time_df)
 ```
 
-This can working with the time data easier. For example, plotting a histogram of the tag on hour.  
+This can make working with the time data easier. For example, plotting a histogram of the tag on hour.  
 
 ```{r}
 hist(bart_od_nicetime$tag_on_hour, breaks=24)
