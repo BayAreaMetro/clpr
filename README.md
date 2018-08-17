@@ -163,8 +163,3 @@ Further background and vignettes (these are in draft form, some may be more usef
 -   [To-and-From-Interactive.Rmd](vignettes/To-and-From-Interactive.Rmd)
 -   [extract-data.Rmd](vignettes/extract-data.Rmd)
 -   [get-transfers.R](vignettes/extract-data.Rmd) - get transfers on and off bart
-
-Resulting Data
-==============
-
-The [resulting data](data-raw/Transfers%20by%20day%20by%20agency%20pair.csv) is summarized in [this Tableau workbook](data-raw/Clipper%20Transfers.twb).
