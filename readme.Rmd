@@ -18,9 +18,9 @@ It can be used to help answer questions like the following:
 2. What are Major Transfer Movements? 
 
 For example:
-* BART to/from MUNI
-* Ferry Service to BART
-* The above movements are (ideally) station and route specific
+* BART to/from MUNI  
+* Ferry Service to BART  
+* The above movements are (ideally) station and route specific  
 
 Installation
 ============
@@ -60,7 +60,7 @@ library(DBI)
 library(dbplyr)
 library(dplyr)
 library(clpr)
-source("~/.keys/rs.R")
+source("~/Documents/connect_db.R")
 rs <- connect_rs()
 date <- "2016-04-25"
 transactions_tbl <- sample_day_of_transactions(rs,date,n_users=100)
