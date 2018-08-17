@@ -58,6 +58,9 @@ Sample a day of transactions by user
 Note that date must be formatted as below for now. YYYY-MM-DD
 
 ```{r}
+library(DBI)
+library(dbplyr)
+library(dplyr)
 rs <- connect_rs()
 date <- "2016-04-25"
 transactions_tbl <- sample_day_of_transactions(rs,date,n_users=100)
