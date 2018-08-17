@@ -1,6 +1,6 @@
 ## Goal 
 
-For product string balues, this is a very rough draft of those that have a 'less than cash' ticket price. 
+For product string values, this is a very rough draft of those that have a 'less than cash' ticket price. 
 
 ## Why
 
