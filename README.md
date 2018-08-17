@@ -81,7 +81,7 @@ rides_df <- drop_tagons(transactions_df)
 We can also create a dataframe summarizing transfers within a given time window (in minutes), using the `create_transfer_df` function.
 
 ``` r
-transfer_df <- create_transfer_df(rides_df, 120)
+transfer_df <- create_transfer_df(rides_df, 120) # 120 minutes
 knitr::kable(transfer_df)
 ```
 
