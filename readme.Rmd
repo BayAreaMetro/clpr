@@ -60,7 +60,10 @@ library(DBI)
 library(dbplyr)
 library(dplyr)
 library(clpr)
-source("~/Documents/connect_db.R")
+source("~/.keys/rs.R")
+```
+
+```{r, message=FALSE, warning=FALSE, results='hide'}
 rs <- connect_rs()
 date <- "2016-04-25"
 transactions_tbl <- sample_day_of_transactions(rs,date,n_users=100)
@@ -108,7 +111,6 @@ We can also pull a full day of transactions using `day_of_transactions`.
 rs <- connect_rs()
 date <- "2016-04-25"
 transactions_tbl <- day_of_transactions(rs,date)
-transactions_df <- as_tibble(transactions_tbl)
 time_df <- spread_time_column(transactions_df$transaction_time, prefix="trnsct_")
 transactions_df <- cbind(transactions_df,time_df)
 ```
@@ -116,6 +118,18 @@ transactions_df <- cbind(transactions_df,time_df)
 ```{r}
 hist(transactions_df$trnsct_hour, breaks=24)
 ```
+
+
+We can also pull a full day of rides:
+
+```{r, message=FALSE, warning=FALSE, results='hide'}
+rs <- connect_rs()
+date <- "2016-04-25"
+transactions_tbl <- get_day_of_rides(rs,date)
+time_df <- spread_time_column(transactions_df$transaction_time, prefix="trnsct_")
+transactions_df <- cbind(transactions_df,time_df)
+```
+
 
 Contributing
 ============

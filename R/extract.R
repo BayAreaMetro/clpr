@@ -18,7 +18,7 @@ sample_day_of_transactions <- function(rs,date1, n_users, drop_existing_table=FA
   return(human_readable_result_df)
 }
 
-#' Pull all transactions for a given number of users
+#' Pull all transactions for a day
 #'
 #' @param rs RPostgres connection to database
 #' @param date1 date to query
@@ -37,6 +37,31 @@ day_of_transactions <- function(rs,date1, drop_existing_table=FALSE) {
   dplyr::db_drop_table(rs, in_schema("ctp",faretable_name))
   return(human_readable_result_df)
 }
+
+
+#' Pull all transactions as rides for a day
+#'
+#' This is an in-database way of using drop_tagons()
+#'
+#' @param rs RPostgres connection to database
+#' @param date1 date to query
+#' @param drop_existing_table whether to drop an existing partitioned table for this date
+#' @return tibble a tibble with the rides for the day from the db
+#'
+#'@importFrom lubridate yday wday ymd
+#'@importFrom dplyr %>%
+#'@importFrom dplyr %>% db_drop_table
+get_day_of_rides <- function(rs,date1, drop_existing_table=FALSE) {
+  faretable_name <- fares_for_day(start_date=date1, drop_existing_table=drop_existing_table)
+  transactions_day <- dplyr::tbl(rs,
+                                 dbplyr::in_schema("ctp",faretable_name))
+  transactions_day <- drop_tagons_db(transactions_day)
+  human_readable_result_tbl <- make_transactions_human_readable(rs,transactions_day)
+  human_readable_result_df <- human_readable_result_tbl %>% as_tibble()
+  dplyr::db_drop_table(rs, in_schema("ctp",faretable_name))
+  return(human_readable_result_df)
+}
+
 
 #'Get descriptive tables for transactions
 #'

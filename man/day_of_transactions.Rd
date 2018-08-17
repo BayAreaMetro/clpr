@@ -2,7 +2,7 @@
 % Please edit documentation in R/extract.R
 \name{day_of_transactions}
 \alias{day_of_transactions}
-\title{Pull all transactions for a given number of users}
+\title{Pull all transactions for a day}
 \usage{
 day_of_transactions(rs, date1, drop_existing_table = FALSE)
 }
@@ -14,8 +14,8 @@ day_of_transactions(rs, date1, drop_existing_table = FALSE)
 \item{drop_existing_table}{whether to drop an existing partitioned table for this date}
 }
 \value{
-tbl a dbplyr/dplyr tbl table
+tibble a tibble with the results for the day from the db
 }
 \description{
-Pull all transactions for a given number of users
+Pull all transactions for a day
 }
