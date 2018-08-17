@@ -1,6 +1,5 @@
 #' Add human-readable product names to transaction entries
 #'
-#' @param rs a connection to redshift as set in connect_rs()
 #' @param tr_tbl a transactions tbl connection as returned from, for example day_of_transactions(rs,date)
 #'
 #' @examples
