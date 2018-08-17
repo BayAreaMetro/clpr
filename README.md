@@ -150,7 +150,11 @@ To help validate the MTC travel model, MTC (David Ory) summarized successive mov
 
 The main scripts [extract-data](vignettes/extract-data.Rmd), [create interactive pair-wise by tag time difference plots](vignettes/To-and-From-Interactive.Rmd), and [build a database of transfer summaries](vignettes/Build-Transfer-Database.Rmd).
 
-Vignettes/Examples
+Examples
+============
+-   [get-transfers.R](vignettes/extract-data.Rmd) - get transfers on and off bart
+
+Deprecated Examples
 ==================
 
 Further background and vignettes (these are in draft form, some may be more useful than others).
@@ -162,4 +166,5 @@ Further background and vignettes (these are in draft form, some may be more usef
 -   [Build-Transfer-Database.Rmd](vignettes/Build-Transfer-Database.Rmd)
 -   [To-and-From-Interactive.Rmd](vignettes/To-and-From-Interactive.Rmd)
 -   [extract-data.Rmd](vignettes/extract-data.Rmd)
--   [get-transfers.R](vignettes/extract-data.Rmd) - get transfers on and off bart
+
+
