@@ -4,7 +4,7 @@
 #' @param date1 date to query
 #' @param n_users number of users
 #' @param drop_existing_table whether to drop an existing partitioned table for this date
-#' @return tbl a dbplyr/dplyr tbl table
+#' @return tibble a tibble with the results for the day from the db
 #'
 #'@importFrom lubridate yday wday ymd
 #'@importFrom dplyr %>% db_drop_table
@@ -23,7 +23,7 @@ sample_day_of_transactions <- function(rs,date1, n_users, drop_existing_table=FA
 #' @param rs RPostgres connection to database
 #' @param date1 date to query
 #' @param drop_existing_table whether to drop an existing partitioned table for this date
-#' @return tbl a dbplyr/dplyr tbl table
+#' @return tibble a tibble with the results for the day from the db
 #'
 #'@importFrom lubridate yday wday ymd
 #'@importFrom dplyr %>%
