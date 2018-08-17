@@ -88,7 +88,7 @@ bart_od <- bart_transactions_as_transfers(transactions_df)
 
 The outcome includes the time of the previous transaction to BART tag-on. For example, a user tagged off of the ferry at 7:05 and then onto bart at 7:20. Or, a user tagged onto an SF Muni bus at 7:00 and then onto bart at 7:30. It also includes the time they tagged onto the following ride. 
 
-You can use use the convenience function `bart_od_nicetime` to spread the timestamp column into day of year, month, hour, and minute integers. 
+You can use use the convenience function `spread_time_column` to spread the timestamp column into day of year, month, hour, and minute integers. 
 
 ```{r, message=FALSE, warning=FALSE, results='hide'}
 out_time_df <- spread_time_column(bart_od$transaction_time, prefix="tag_out_")
