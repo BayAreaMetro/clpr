@@ -1,7 +1,7 @@
 context("db sampling is working")
 library(clpr)
 
-#source("YOUR_CREDENTIALS_FILE")
+source("~/.keys/rs.R")
 library(DBI)
 library(RPostgres)
 library(dbplyr)
