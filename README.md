@@ -8,8 +8,8 @@ clpr
 -   [Example Usage](#example-usage)
 -   [Contributing](#contributing)
 -   [2014 By-Operator Transfer Summary](#by-operator-transfer-summary)
--   [Vignettes/Examples](#vignettesexamples)
--   [Resulting Data](#resulting-data)
+-   [Examples](#examples)
+-   [Deprecated Examples](#deprecated-examples)
 
 This is an [R package](http://kbroman.org/pkg_primer/) with analysis utilities and approaches for a data set of obscured and anonymized Clipper smart card transactions.
 
@@ -137,6 +137,38 @@ hist(transactions_df$trnsct_hour, breaks=24)
 ```
 
 ![](readme_files/figure-markdown_github/unnamed-chunk-8-1.png)
+
+Then we can calculate the average number of transactions per product type in the day:
+
+``` r
+rides_df <- drop_tagons(transactions_tbl)
+
+rides_df <- get_product_description(rides_df)
+
+rides_per_user <- rides_df %>%
+  group_by(cardid_anony,product_description) %>%
+  transmute(total_rides=n())
+
+rides_per_type <- rides_per_user %>%
+  group_by(product_description) %>%
+  summarise(mean_rides=mean(total_rides))
+
+knitr::kable(arrange(rides_per_type,mean_rides))
+```
+
+| product\_description                            |  mean\_rides|
+|:------------------------------------------------|------------:|
+| AC Transit Senior/Disabled Local Monthly Pass   |     4.544394|
+| SF Muni RTC Monthly Pass                        |     4.666268|
+| East Bay Regional RTC Local 31-Day Pass         |     5.000000|
+| VTA Express ECO Pass                            |     5.080000|
+| VTA Senior / Disabled Monthly Pass              |     5.089205|
+| East Bay Regional Adult Local 31-Day Pass       |     5.100457|
+| SF Muni 3 Day Rolling Pass                      |     5.597938|
+| FAST Route 90 Youth 31-day Rolling Pass         |     6.000000|
+| WestCAT Senior 31-Day Pass                      |     6.000000|
+| Santa Rosa CityBus S/D 31-day rolling pass      |     6.375000|
+| FAST Route 90 Senior 31-day Rolling Pass        |     7.727273|
 
 Contributing
 ============

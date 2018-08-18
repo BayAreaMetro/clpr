@@ -117,6 +117,25 @@ transactions_df <- cbind(transactions_df,time_df)
 hist(transactions_df$trnsct_hour, breaks=24)
 ```
 
+Then we can calculate the average number of transactions per product type in the day:
+
+```{r}
+rides_df <- drop_tagons(transactions_tbl)
+
+rides_df <- get_product_description(rides_df)
+
+rides_per_user <- rides_df %>%
+  group_by(cardid_anony,product_description) %>%
+  transmute(total_rides=n())
+
+rides_per_type <- rides_per_user %>%
+  group_by(product_description) %>%
+  summarise(mean_rides=mean(total_rides))
+
+knitr::kable(head(arrange(rides_per_type,desc(mean_rides))))
+```
+
+
 Contributing
 ============
 
