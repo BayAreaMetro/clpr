@@ -2,6 +2,7 @@ clpr
 ================
 
 -   [Goal](#goal)
+-   [Dependencies](#dependencies)
 -   [Installation](#installation)
 -   [Setup](#setup)
 -   [Testing](#testing)
@@ -27,6 +28,13 @@ For example:
 -   BART to/from MUNI      
 -   Ferry Service to BART      
 -   The above movements are (ideally) station and route specific    
+
+https://github.com/BayAreaMetro/DataServices/tree/master/Project-Documentation/clipper
+
+Dependency
+============
+
+The DV Data Lake schemas `clipper` and `clipper_sandbox1` are the major dependency of this package. Some limited documentation for those schemas can be found [here](https://github.com/BayAreaMetro/DataServices/tree/master/Project-Documentation/clipper). 
 
 Installation
 ============
