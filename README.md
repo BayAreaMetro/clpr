@@ -31,7 +31,7 @@ For example:
 
 https://github.com/BayAreaMetro/DataServices/tree/master/Project-Documentation/clipper
 
-Dependency
+Dependencies
 ============
 
 The DV Data Lake schemas `clipper` and `clipper_sandbox1` are the major dependency of this package. Some limited documentation for those schemas can be found [here](https://github.com/BayAreaMetro/DataServices/tree/master/Project-Documentation/clipper). 
