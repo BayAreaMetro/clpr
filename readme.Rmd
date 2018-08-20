@@ -141,28 +141,18 @@ Contributing
 
 You can contribute code, data, or questions. Please feel free to [open an issue](https://github.com/BayAreaMetro/clpr/issues) with any questions about how to use the package.  
 
+Examples
+============
+-   [travel-model-survey-verification](https://github.com/BayAreaMetro/Data-And-Visualization-Projects/tree/b4fea219ebb3c29ce9972b4e6f9853afa76161a7/travel-model-survey-verification) - summarise which operators individuals transfer to and from on their BART trips.   
+
+Background
+===========
+
+This package is based on the work below:
+
 2014 By-Operator Transfer Summary 
 ====
 
 To help validate the MTC travel model, MTC (David Ory) summarized successive movements made by a single Clipper card within [pre-defined time windows](data-raw/transfer_rules_database.csv). We refer to these as transfers.
 
 The main scripts [extract-data](vignettes/extract-data.Rmd), [create interactive pair-wise by tag time difference plots](vignettes/To-and-From-Interactive.Rmd), and [build a database of transfer summaries](vignettes/Build-Transfer-Database.Rmd).
-
-Examples
-============
--   [get-transfers.R](vignettes/extract-data.Rmd) - get transfers on and off bart
-
-Deprecated Examples
-==================
-
-Further background and vignettes (these are in draft form, some may be more useful than others).
-
--   [Alpha-Test-01---Find-People-for-Random-Weekday.Rmd](vignettes/AlphaTest01---Find-People-for-Random-Weekday.Rmd)
--   [Alpha-Test-01---Find-People.Rmd](vignettes/Alpha-Test-01---Find-People.Rmd)
--   [Alpha-Test-02---If-A-and-B-and-C-for-Random-Weekday.Rmd](vignettes/Alpha-Test-02---If-A-and-B-and-C-for-Random-Weekday.Rmd)
--   [Alpha-Test-02---If-A-and-B-and-C.Rmd](vignettes/Alpha-Test-02---If-A-and-B-and-C.Rmd)
--   [Build-Transfer-Database.Rmd](vignettes/Build-Transfer-Database.Rmd)
--   [To-and-From-Interactive.Rmd](vignettes/To-and-From-Interactive.Rmd)
--   [extract-data.Rmd](vignettes/extract-data.Rmd)
-
-
