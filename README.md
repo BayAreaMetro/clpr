@@ -180,8 +180,10 @@ Examples
 -   [travel-survey-verification](https://github.com/BayAreaMetro/Data-And-Visualization-Projects/tree/b4fea219ebb3c29ce9972b4e6f9853afa76161a7/travel-model-survey-verification)
 
 
-Background: 2014 By-Operator Transfer Summary
+Background 
 =================================
+
+### 2014 By-Operator Transfer Summary
 
 This package is based on previous work on travel model verification. 
 
