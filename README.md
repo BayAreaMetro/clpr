@@ -185,7 +185,7 @@ You can contribute code, data, or questions. Please feel free to [open an issue]
 
 Examples
 ============
--   [travel-survey-verification](https://github.com/BayAreaMetro/Data-And-Visualization-Projects/travel-model-survey-verification)
+-   [travel-survey-verification](https://github.com/BayAreaMetro/Data-And-Visualization-Projects/tree/master/travel-model-survey-verification)
 
 
 Background 
