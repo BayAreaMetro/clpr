@@ -45,7 +45,7 @@ test_that("we parse BART transfers OK", {
   tbl1 <- sample_day_of_transactions(rs,date1,n_users=1000)
   df1 <- tbl1
 
-  bart_od <- bart_transactions_as_transfers(df1)
+  bart_od <- as_bart_journeys(df1)
 
   bart_od_check <- bart_od %>%
     filter((!is.na(transfer_to_operator) | !is.na(transfer_from_operator))) %>%
