@@ -27,7 +27,7 @@ add_trip_cost <- function(tr_df) {
 #' Drop rows with tag on subtypes after recording the relevant tag on information in the tag off transactions
 #' @param tr_df dataframe of transactions
 #' @returns tr_df dataframe of transactions
-drop_tagons <- function(tr_df) {
+as_rides <- function(tr_df) {
   tr_df <- tr_df %>%
     add_tagon_time() %>%
     add_trip_cost() %>%
