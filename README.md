@@ -83,10 +83,10 @@ transactions_tbl <- sample_day_of_transactions(rs,date,n_users=100)
 transactions_df <- as_tibble(transactions_tbl)
 ```
 
-First, let's use the `drop_tagons` function to change the unit of observation from transactions to rides, where a ride is a ride on an operator.
+First, let's use the `as_rides` function to change the unit of observation from transactions to rides, where a ride is a ride on an operator.
 
 ``` r
-rides_df <- drop_tagons(transactions_df)
+rides_df <- as_rides(transactions_df)
 ```
 
 We can also create a dataframe summarizing transfers within a given time window (in minutes), using the `create_transfer_df` function.
@@ -105,10 +105,10 @@ knitr::kable(transfer_df)
 | Golden Gate Transit      | Golden Gate Transit |                  11|                11|               0|                0|                  0|
 | SF Muni                  | BART                |                  18|                 4|               0|                0|                  0|
 
-Alternatively, we can use the `bart_transactions_as_transfers` function to change the unit of observation from transactions to rides on BART only, with additional information about the rides that individuals may have taken before or after boarding BART. For example, taking a ferry and then BART.
+Alternatively, we can use the `as_bart_journeys` function to change the unit of observation from transactions to rides on BART only, with additional information about the rides that individuals may have taken before or after boarding BART. For example, taking a ferry and then BART.
 
 ``` r
-bart_od <- bart_transactions_as_transfers(transactions_df)
+bart_od <- as_bart_journeys(transactions_df)
 ```
 
 The outcome includes the time of the previous transaction to BART tag-on. For example, a user tagged off of the ferry at 7:05 and then onto BART at 7:20. Or, a user tagged onto an SF Muni bus at 7:00 and then onto BART at 7:30. It also includes the time they tagged onto the following ride.
@@ -149,7 +149,7 @@ hist(transactions_df$trnsct_hour, breaks=24)
 Then we can calculate the average number of transactions per product type in the day:
 
 ``` r
-rides_df <- drop_tagons(transactions_tbl)
+rides_df <- as_rides(transactions_tbl)
 
 rides_df <- get_product_description(rides_df)
 

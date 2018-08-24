@@ -1,4 +1,4 @@
-transaction_transfer_vars <- c("cardid_anony","transaction_time","time_of_previous",
+bart_journey_vars <- c("cardid_anony","transaction_time","time_of_previous",
                           "is_bart","transfer_from_route",
                           "transfer_to_route",
                           "transfer_to_not_bart",
@@ -13,12 +13,3 @@ transaction_transfer_vars <- c("cardid_anony","transaction_time","time_of_previo
                           "routename",
                           "tripsequencenumber","sequencenumber")
 
-
-bart_flattened_transfers_variables <- c("cardid_anony",
-                                        "transaction_time","time_of_previous",
-                                "locationname.origin","locationname.destination",
-                                "transfer_to_operator","transfer_from_route",
-                                "transfer_to_route",
-                                "transfer_from_operator",
-                                "transfer_from_operator_time",
-                                "transfer_to_operator_time")

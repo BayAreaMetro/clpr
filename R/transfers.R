@@ -81,7 +81,7 @@ nicetime <- function(df1){
 #' @param tr_df a sample of transactions, effectively from the raw sfofaretransactions table, joined to other tables
 #' @returns bart_xfer_df table in which transfers in and out of bart are captured with metadata
 #' @importFrom dplyr group_by mutate case_when lag arrange filter select
-bart_transactions_as_transfers <- function(tr_df){
+as_bart_journeys <- function(tr_df){
   bart_rider_ids <- tr_df %>%
     dplyr::filter(operatorid==4) %>%
     dplyr::pull(cardid_anony)
