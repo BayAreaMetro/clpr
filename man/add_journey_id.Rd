@@ -2,7 +2,7 @@
 % Please edit documentation in R/journeys.R
 \name{add_journey_id}
 \alias{add_journey_id}
-\title{Adds column identifying applicable groups of rides as journeys}
+\title{Adds column grouping applicable rides as numbered journeys}
 \usage{
 add_journey_id(tr_df)
 }
@@ -10,5 +10,5 @@ add_journey_id(tr_df)
 \item{tr_df}{a dataframe of rides}
 }
 \description{
-Adds column identifying applicable groups of rides as journeys
+Adds column grouping applicable rides as numbered journeys
 }

@@ -15,7 +15,7 @@ add_transfer_time <- function(tr_df) {
   return(tr_df)
 }
 
-#' Adds column identifying applicable groups of rides as journeys
+#' Adds column grouping applicable rides as numbered journeys
 #' @param tr_df a dataframe of rides
 #' @returns tr_df a dataframe of rides
 add_journey_id <- function(tr_df) {
@@ -23,17 +23,15 @@ add_journey_id <- function(tr_df) {
     dplyr::arrange(cardid_anony, transaction_time) %>%
     dplyr::mutate(is_transfer = transfer_time < max_time)
 
-  journey_ids <- c()
-  id <- 0
-  for (row in 1:nrow(tr_df)) {
-    if (is.na(tr_df[row, "is_transfer"]) | tr_df[row, "is_transfer"] == FALSE) {
-      id <- id + 1
-      }
-    journey_ids <- c(journey_ids, id)
-  }
+  tr_df$is_transfer <- ifelse(is.na(tr_df$is_transfer),
+                               FALSE, tr_df$is_transfer)
 
-   tr_df <- tr_df %>%
+  ids <- 1 - tr_df$is_transfer
+  journey_ids <- Reduce("+", ids, accumulate=TRUE)
+
+  tr_df <- tr_df %>%
     ungroup() %>%
     dplyr::mutate(journey_id = journey_ids)
+
   return(tr_df)
 }
