@@ -4,7 +4,7 @@
 #' @returns tr_df a dataframe of transactions
 identify_transfer_for_time <- function(tr_df, mins) {
   tr_df <- tr_df %>%
-    clpr::drop_tagons() %>%
+    clpr::as_rides() %>%
     dplyr::filter(!is.na(participantname.transfer)) %>%
     dplyr::group_by(cardid_anony) %>%
     dplyr::arrange(transaction_time) %>%
