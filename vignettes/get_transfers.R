@@ -20,9 +20,9 @@ l_dfs <- lapply(dates, function(x) {
   day_of_transactions(rs,x)
 })
 
-l_dfs <- lapply(l_dfs,function(x){select(x,transaction_transfer_vars)})
+l_dfs <- lapply(l_dfs,function(x){select(x,bart_journey_vars)})
 
-l_dfs2 <- lapply(l_dfs,function(x){try(bart_transactions_as_transfers(x))})
+l_dfs2 <- lapply(l_dfs,function(x){try(as_bart_journeys(x))})
 
 l_dfs3 <- lapply(l_dfs2,function(x){try(nicetime(x))})
 
