@@ -2,7 +2,7 @@
 % Please edit documentation in R/transfer_df.R
 \name{identify_transfer_for_time}
 \alias{identify_transfer_for_time}
-\title{This is an R script to create a table with transfer information for all combinations of operators for a given time window}
+\title{Adds column to indicate a transfer under given time windows}
 \usage{
 identify_transfer_for_time(tr_df, mins)
 }

@@ -14,7 +14,7 @@ day_of_transactions(rs, date1, drop_existing_table = FALSE)
 \item{drop_existing_table}{whether to drop an existing partitioned table for this date}
 }
 \value{
-tbl a dbplyr/dplyr tbl table
+tibble a tibble with the results for the day from the db
 }
 \description{
 Pull all transactions for a given number of users

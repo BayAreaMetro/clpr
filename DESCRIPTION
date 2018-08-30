@@ -2,7 +2,13 @@ Package: clpr
 Type: Package
 Title: Work With Clipper Data
 Version: 0.1.0
-Author: Tom Buckley, David Ory, Yeeling Tse
+Authors@R: c(
+    person("Yeeling", "Tse", role = c("aut", "cre"), email = "ytse@bayareametro.gov"),
+    person("Tom", "Buckley", role = c("aut"), email = "tbuckley@bayareametro.gov"),
+    person("Sara", "Barz", role = c("ctb"), email = "sbarz@bayareametro.gov"),
+    person("Kearey", "Smith", role = c("ctb"), email = "ksmith@bayareametro.gov"),
+    person("David", "Ory", role = c("cph"))
+  )
 Maintainer: Tom Buckley <tbuckley@bayareametro.gov>
 Description: This is an R package with analysis utilities and approaches for a data set of obscured and anonymized Clipper smart card transactions.
 License: GPL-2 | MIT 

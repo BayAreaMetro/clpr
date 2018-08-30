@@ -5,11 +5,11 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vignette Title • clpr</title>
+<title>clpr-tutorial • clpr</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Vignette Title">
+<script src="../pkgdown.js"></script><meta property="og:title" content="clpr-tutorial">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
@@ -52,7 +52,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/clpr-tutorial.html">Vignette Title</a>
+      <a href="../articles/clpr-tutorial.html">clpr-tutorial</a>
     </li>
   </ul>
 </li>
@@ -69,8 +69,7 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Vignette Title</h1>
-                        <h4 class="author">Vignette Author</h4>
+      <h1>clpr-tutorial</h1>
             
             <h4 class="date">2018-08-30</h4>
       
@@ -114,57 +113,39 @@ knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentati
 <tbody>
 <tr class="odd">
 <td align="left">AC Transit</td>
-<td align="left">AC Transit</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">1.0</td>
-</tr>
-<tr class="even">
-<td align="left">AC Transit</td>
 <td align="left">BART</td>
 <td align="right">1</td>
 <td align="right">4</td>
 <td align="right">0</td>
 <td align="right">0</td>
-<td align="right">0.0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">BART</td>
+<td align="left">BART</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
 </tr>
 <tr class="odd">
-<td align="left">BART</td>
-<td align="left">BART</td>
-<td align="right">4</td>
-<td align="right">4</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0.0</td>
-</tr>
-<tr class="even">
 <td align="left">BART</td>
 <td align="left">SF Muni</td>
 <td align="right">4</td>
 <td align="right">18</td>
 <td align="right">0</td>
 <td align="right">0</td>
-<td align="right">0.0</td>
-</tr>
-<tr class="odd">
-<td align="left">Corridor 101</td>
-<td align="left">Golden Gate Transit</td>
-<td align="right">22</td>
-<td align="right">11</td>
 <td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0.0</td>
 </tr>
 <tr class="even">
-<td align="left">Golden Gate Transit</td>
-<td align="left">Golden Gate Transit</td>
-<td align="right">11</td>
-<td align="right">11</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">5.2</td>
+<td align="left">SamTrans</td>
+<td align="left">BART</td>
+<td align="right">15</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
 </tr>
 <tr class="odd">
 <td align="left">SF Muni</td>
@@ -173,7 +154,7 @@ knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentati
 <td align="right">4</td>
 <td align="right">0</td>
 <td align="right">0</td>
-<td align="right">0.0</td>
+<td align="right">0</td>
 </tr>
 </tbody>
 </table>
@@ -248,25 +229,6 @@ knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentati
 <a href="#contributing" class="anchor"></a>Contributing</h1>
 <p>You can contribute code, data, or questions. Please feel free to <a href="https://github.com/BayAreaMetro/clpr/issues">open an issue</a> with any questions about how to use the package.</p>
 </div>
-<div id="examples" class="section level1">
-<h1 class="hasAnchor">
-<a href="#examples" class="anchor"></a>Examples</h1>
-<ul>
-<li>
-<a href="https://github.com/BayAreaMetro/Data-And-Visualization-Projects/tree/b4fea219ebb3c29ce9972b4e6f9853afa76161a7/travel-model-survey-verification">travel-model-survey-verification</a> - summarise which operators individuals transfer to and from on their BART trips.</li>
-</ul>
-</div>
-<div id="background" class="section level1">
-<h1 class="hasAnchor">
-<a href="#background" class="anchor"></a>Background</h1>
-<p>This package is based on the work below:</p>
-</div>
-<div id="by-operator-transfer-summary" class="section level1">
-<h1 class="hasAnchor">
-<a href="#by-operator-transfer-summary" class="anchor"></a>2014 By-Operator Transfer Summary</h1>
-<p>To help validate the MTC travel model, MTC (David Ory) summarized successive movements made by a single Clipper card within <a href="data-raw/transfer_rules_database.csv">pre-defined time windows</a>. We refer to these as transfers.</p>
-<p>The main scripts <a href="vignettes/extract-data.Rmd">extract-data</a>, <a href="vignettes/To-and-From-Interactive.Rmd">create interactive pair-wise by tag time difference plots</a>, and <a href="vignettes/Build-Transfer-Database.Rmd">build a database of transfer summaries</a>.</p>
-</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -276,9 +238,6 @@ knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentati
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#sampling-transactions">Sampling Transactions</a></li>
       <li><a href="#contributing">Contributing</a></li>
-      <li><a href="#examples">Examples</a></li>
-      <li><a href="#background">Background</a></li>
-      <li><a href="#by-operator-transfer-summary">2014 By-Operator Transfer Summary</a></li>
       </ul>
 </div>
       </div>
