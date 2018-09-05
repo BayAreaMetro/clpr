@@ -9,6 +9,9 @@ bart_lag_and_lead_metadata(tr_df)
 \arguments{
 \item{tr_df}{a dataframe of transactions}
 }
+\value{
+tr_df a dataframe of transactions
+}
 \description{
 Adds columns describing the route, time, and operator name of previous and later transactions
 }

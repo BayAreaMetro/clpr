@@ -9,6 +9,9 @@ add_tagon_time(tr_df)
 \arguments{
 \item{tr_df}{dataframe of transactions}
 }
+\value{
+tr_df dataframe of transactions
+}
 \description{
 Add columns for tag on time, trip duration to tag off transactions
 }

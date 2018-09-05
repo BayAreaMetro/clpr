@@ -9,6 +9,9 @@ bart_transactions_per_user(tr_df)
 \arguments{
 \item{tr_df}{a dataframe of transactions}
 }
+\value{
+tr_df a dataframe of transactions with a bart_tr_count and tr_count_diff column
+}
 \description{
 Adds a column with a counts of the number of bart transactions per user and diff with all transactions
 }

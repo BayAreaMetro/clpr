@@ -9,6 +9,9 @@ bart_identify(tr_df)
 \arguments{
 \item{tr_df}{a dataframe of transactions}
 }
+\value{
+tr_df a dataframe of transactions with columns: from_bart, to_bart, from_not_bart, to_not_bart
+}
 \description{
 Adds columns identifying bart transactions, including lags and leads
 }

@@ -9,6 +9,9 @@ transactions_per_user(tr_df)
 \arguments{
 \item{tr_df}{a dataframe of transactions}
 }
+\value{
+tr_df a dataframe of transactions with a transaction_count column
+}
 \description{
 Adds a column with a counts of the number of transactions per user
 }

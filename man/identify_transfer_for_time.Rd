@@ -11,6 +11,9 @@ identify_transfer_for_time(tr_df, mins)
 
 \item{mins}{time period to qualify as a transfer (in minutes)}
 }
+\value{
+tr_df a dataframe of transactions
+}
 \description{
 Adds column to indicate a transfer under given time windows
 }

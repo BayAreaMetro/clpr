@@ -9,6 +9,9 @@ add_journey_id(tr_df)
 \arguments{
 \item{tr_df}{a dataframe of rides}
 }
+\value{
+tr_df a dataframe of rides
+}
 \description{
 Adds column grouping applicable rides as numbered journeys
 }

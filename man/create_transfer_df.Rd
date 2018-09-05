@@ -11,6 +11,9 @@ create_transfer_df(tr_df, mins)
 
 \item{mins}{time period to qualify as a transfer (in minutes)}
 }
+\value{
+transfer_df a dataframe of transfer information
+}
 \description{
 Creates a summary table of all combinations of transfers
 }

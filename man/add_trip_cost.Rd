@@ -9,6 +9,9 @@ add_trip_cost(tr_df)
 \arguments{
 \item{tr_df}{dataframe of transactions}
 }
+\value{
+tr_df dataframe of transactions
+}
 \description{
 Add column for previous purse amount and actual trip cost for trips with subtypes 2/3
 }

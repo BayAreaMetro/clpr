@@ -82,6 +82,7 @@
 <ol>
 <li>What are Station-to-Station Tabulations for Fixed-Guideway systems?</li>
 <li>What are Major Transfer Movements?</li>
+<li>What are the uses of various Clipper products like?</li>
 </ol>
 <p>For example:</p>
 <ul>
@@ -126,7 +127,15 @@ devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocument
 <div id="background" class="section level1">
 <h1 class="hasAnchor">
 <a href="#background" class="anchor"></a>Background</h1>
-<p>This package was started as a set of R Markdown scripts in 2014. Those scripts were based around a database that is not available to us presently. So for now the scripts were removed from the repository but are part of git history. They may be useful for understanding how to work with these data in the future and can be found <a href="https://github.com/BayAreaMetro/clpr/commit/808808adcdb73519a7bf6006e0dd84ba716cbe8d">here</a>.</p>
+<p>This package was started as a set of R Markdown scripts in 2014. Those scripts were based around a database that is not available to us presently. So for now the scripts were removed from the repository but are part of git history. They may be useful for understanding how to work with these data in the future and can be found <a href="https://github.com/BayAreaMetro/clpr/commit/808808adcdb73519a7bf6006e0dd84ba716cbe8d">here</a> and <a href="https://github.com/BayAreaMetro/clpr/commit/7645ceb541b6353909034b709407cb5aaacecdf6">here</a>.</p>
+</div>
+<div id="building-the-docs" class="section level1">
+<h1 class="hasAnchor">
+<a href="#building-the-docs" class="anchor"></a>Building the Docs</h1>
+<p>Docs can be re-built with <a href="https://github.com/r-lib/pkgdown">pkgdown</a> like so:</p>
+<pre><code>library(pkgdown)
+pkgdown::build_site()</code></pre>
+<p>The output to the ‘docs’ folder.</p>
 </div>
 
   </div>

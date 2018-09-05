@@ -9,6 +9,9 @@ as_bart_journeys(tr_df)
 \arguments{
 \item{tr_df}{a sample of transactions, effectively from the raw sfofaretransactions table, joined to other tables}
 }
+\value{
+bart_xfer_df table in which transfers in and out of bart are captured with metadata
+}
 \description{
 Spreads multiple transactions across columns into one-row-per-bart-trip (with a focus on transfers in and out)
 }

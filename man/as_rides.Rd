@@ -9,6 +9,9 @@ as_rides(tr_df)
 \arguments{
 \item{tr_df}{dataframe of transactions}
 }
+\value{
+tr_df dataframe of transactions
+}
 \description{
 Drop rows with tag on subtypes after recording the relevant tag on information in the tag off transactions
 }

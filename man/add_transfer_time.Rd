@@ -9,6 +9,9 @@ add_transfer_time(tr_df)
 \arguments{
 \item{tr_df}{a dataframe of rides}
 }
+\value{
+tr_df a dataframe of rides
+}
 \description{
 Adds column classifying transfers as given by the transfer rules dataframe
 }
