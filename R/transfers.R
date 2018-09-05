@@ -2,7 +2,7 @@ library(stringr)
 
 #' Adds columns identifying bart transactions, including lags and leads
 #' @param tr_df a dataframe of transactions
-#' @returns tr_df a dataframe of transactions with columns: from_bart, to_bart, from_not_bart, to_not_bart
+#' @return tr_df a dataframe of transactions with columns: from_bart, to_bart, from_not_bart, to_not_bart
 bart_identify <- function(tr_df) {
     tr_df <- tr_df %>%
       dplyr::group_by(cardid_anony) %>%
@@ -17,7 +17,7 @@ bart_identify <- function(tr_df) {
 
 #' Adds columns describing the route, time, and operator name of previous and later transactions
 #' @param tr_df a dataframe of transactions
-#' @returns tr_df a dataframe of transactions
+#' @return tr_df a dataframe of transactions
 bart_lag_and_lead_metadata <- function(tr_df) {
     tr_df <- tr_df %>%
       dplyr::group_by(cardid_anony) %>%
@@ -47,7 +47,7 @@ bart_lag_and_lead_metadata <- function(tr_df) {
 
 #' Adds a column with a counts of the number of transactions per user
 #' @param tr_df a dataframe of transactions
-#' @returns tr_df a dataframe of transactions with a transaction_count column
+#' @return tr_df a dataframe of transactions with a transaction_count column
 transactions_per_user <- function(tr_df) {
     tr_df <- tr_df %>%
       dplyr::group_by(cardid_anony,yday) %>%
@@ -58,7 +58,7 @@ transactions_per_user <- function(tr_df) {
 
 #' Adds a column with a counts of the number of bart transactions per user and diff with all transactions
 #' @param tr_df a dataframe of transactions
-#' @returns tr_df a dataframe of transactions with a bart_tr_count and tr_count_diff column
+#' @return tr_df a dataframe of transactions with a bart_tr_count and tr_count_diff column
 bart_transactions_per_user <- function(tr_df) {
     tr_df <- tr_df %>%
       dplyr::group_by(cardid_anony,yday,is_bart) %>%
@@ -79,7 +79,7 @@ nicetime <- function(df1){
 #' Spreads multiple transactions across columns into one-row-per-bart-trip (with a focus on transfers in and out)
 #'
 #' @param tr_df a sample of transactions, effectively from the raw sfofaretransactions table, joined to other tables
-#' @returns bart_xfer_df table in which transfers in and out of bart are captured with metadata
+#' @return bart_xfer_df table in which transfers in and out of bart are captured with metadata
 #' @importFrom dplyr group_by mutate case_when lag arrange filter select
 as_bart_journeys <- function(tr_df){
   bart_rider_ids <- tr_df %>%

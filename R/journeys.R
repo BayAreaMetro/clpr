@@ -1,6 +1,6 @@
 #' Adds column classifying transfers as given by the transfer rules dataframe
 #' @param tr_df a dataframe of rides
-#' @returns tr_df a dataframe of rides
+#' @return tr_df a dataframe of rides
 add_transfer_time <- function(tr_df) {
   tr_df <- tr_df %>%
     as_rides() %>%
@@ -17,7 +17,7 @@ add_transfer_time <- function(tr_df) {
 
 #' Adds column grouping applicable rides as numbered journeys
 #' @param tr_df a dataframe of rides
-#' @returns tr_df a dataframe of rides
+#' @return tr_df a dataframe of rides
 add_journey_id <- function(tr_df) {
   tr_df <- tr_df %>%
     dplyr::arrange(cardid_anony, transaction_time) %>%
