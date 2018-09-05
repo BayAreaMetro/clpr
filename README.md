@@ -56,7 +56,7 @@ Please see the [tutorial](https://bayareametro.github.io/clpr/articles/clpr-tuto
 Background
 ===============
 
-This package was started as a set of R Markdown scripts in 2014. Those scripts were based around a database that is not available to us presently. So for now the scripts were removed from the repository but are part of git history. They may be useful for understanding how to work with these data in the future and can be found [here](https://github.com/BayAreaMetro/clpr/commit/808808adcdb73519a7bf6006e0dd84ba716cbe8d).   
+This package was started as a set of R Markdown scripts in 2014. Those scripts were based around a database that is not available to us presently. So for now the scripts were removed from the repository but are part of git history. They may be useful for understanding how to work with these data in the future and can be found [here](https://github.com/BayAreaMetro/clpr/commit/808808adcdb73519a7bf6006e0dd84ba716cbe8d) and [here](https://github.com/BayAreaMetro/clpr/commit/7645ceb541b6353909034b709407cb5aaacecdf6).   
 
 
 Building the Docs
