@@ -71,7 +71,7 @@
     <div class="page-header toc-ignore">
       <h1>clpr-tutorial</h1>
             
-            <h4 class="date">2018-09-05</h4>
+            <h4 class="date">2018-09-06</h4>
       
       
       <div class="hidden name"><code>clpr-tutorial.Rmd</code></div>
@@ -100,16 +100,14 @@ transactions_df &lt;-<span class="st"> </span><span class="kw"><a href="../refer
 <p>We can also create a dataframe summarizing transfers within a given time window (in minutes), using the <code>create_transfer_df</code> function.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">transfer_df &lt;-<span class="st"> </span><span class="kw"><a href="../reference/create_transfer_df.html">create_transfer_df</a></span>(rides_df, <span class="dv">120</span>) <span class="co">#120 minutes</span>
 <span class="kw">head</span>(transfer_df)
-<span class="co">#&gt; # A tibble: 6 x 7</span>
+<span class="co">#&gt; # A tibble: 4 x 7</span>
 <span class="co">#&gt; # Groups:   participantname.transfer [3]</span>
 <span class="co">#&gt;   participantname.transfer participantname from_operator_id to_operator_id</span>
 <span class="co">#&gt;   &lt;chr&gt;                    &lt;chr&gt;                      &lt;int&gt;          &lt;int&gt;</span>
-<span class="co">#&gt; 1 AC Transit               AC Transit                     1              1</span>
-<span class="co">#&gt; 2 AC Transit               BART                           1              4</span>
-<span class="co">#&gt; 3 BART                     BART                           4              4</span>
-<span class="co">#&gt; 4 BART                     Napa Solano                    4              9</span>
-<span class="co">#&gt; 5 BART                     SF Muni                        4             18</span>
-<span class="co">#&gt; 6 East Bay                 SF Muni                        8             18</span>
+<span class="co">#&gt; 1 AC Transit               BART                           1              4</span>
+<span class="co">#&gt; 2 AC Transit               SF Muni                        1             18</span>
+<span class="co">#&gt; 3 SF Muni                  BART                          18              4</span>
+<span class="co">#&gt; 4 VTA                      VTA                           17             17</span>
 <span class="co">#&gt; # ... with 3 more variables: num_transfers &lt;dbl&gt;, num_discounted &lt;int&gt;,</span>
 <span class="co">#&gt; #   transfer_revenue &lt;dbl&gt;</span></code></pre></div>
 <p>Alternatively, we can use the <code>as_bart_journeys</code> function to change the unit of observation from transactions to rides on BART only, with additional information about the rides that individuals may have taken before or after boarding BART. For example, taking a ferry and then BART.</p>
@@ -121,7 +119,7 @@ in_time_df &lt;-<span class="st"> </span><span class="kw"><a href="../reference/
 bart_od_nicetime &lt;-<span class="st"> </span><span class="kw">cbind</span>(bart_od,in_time_df,out_time_df)</code></pre></div>
 <p>This can make working with the time data easier. For example, plotting a histogram of the tag on hour.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">hist</span>(bart_od_nicetime<span class="op">$</span>tag_on_hour, <span class="dt">breaks=</span><span class="dv">24</span>)</code></pre></div>
-<p><img src="clpr-tutorial_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<p><img src="clpr-tutorial_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 <p>We can also pull a full day of transactions using <code>day_of_transactions</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rs &lt;-<span class="st"> </span><span class="kw">connect_rs</span>()
 date &lt;-<span class="st"> "2016-04-25"</span>
@@ -130,7 +128,7 @@ transactions_df &lt;-<span class="st"> </span><span class="kw"><a href="http://d
 time_df &lt;-<span class="st"> </span><span class="kw"><a href="../reference/spread_time_column.html">spread_time_column</a></span>(transactions_df<span class="op">$</span>transaction_time, <span class="dt">prefix=</span><span class="st">"trnsct_"</span>)
 transactions_df &lt;-<span class="st"> </span><span class="kw">cbind</span>(transactions_df,time_df)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">hist</span>(transactions_df<span class="op">$</span>trnsct_hour, <span class="dt">breaks=</span><span class="dv">24</span>)</code></pre></div>
-<p><img src="clpr-tutorial_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="clpr-tutorial_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
 <p>Then we can calculate the average number of transactions per product type in the day:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rides_df &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_rides.html">as_rides</a></span>(transactions_tbl)
 

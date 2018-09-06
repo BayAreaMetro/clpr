@@ -1,13 +1,7 @@
 #' Add human-readable product names to transaction entries
 #'
-#' @param tr_tbl a transactions tbl connection as returned from, for example day_of_transactions(rs,date)
-#'
-#' @examples
-#'transactions_tbl <- day_of_transactions(rs,date)
-#'transactions_tbl_with_product_names <- get_product_description(transactions_tbl)
-#'prod_summary <- transactions_tbl2 %>%
-#'  group_by(product_description) %>%
-#'  summarise(count=n_distinct(cardid_anony))
+#' @param tr_tbl a transactions tibble connection as returned from, for example day_of_transactions(rs,date)
+#' @return tr_tbl a transactions tibble with a text value based product description column
 #'
 #' @importFrom dplyr left_join
 get_product_description <- function(tr_tbl) {
