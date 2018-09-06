@@ -1,3 +1,4 @@
+#' @importFrom odbc dbConnect
 connect_rs <- function() {
   rs <- odbc::dbConnect(RPostgres::Postgres(),
                   "user" = Sys.getenv("RSUSER"),
