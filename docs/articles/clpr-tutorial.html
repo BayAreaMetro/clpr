@@ -121,7 +121,7 @@ in_time_df &lt;-<span class="st"> </span><span class="kw"><a href="../reference/
 bart_od_nicetime &lt;-<span class="st"> </span><span class="kw">cbind</span>(bart_od,in_time_df,out_time_df)</code></pre></div>
 <p>This can make working with the time data easier. For example, plotting a histogram of the tag on hour.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">hist</span>(bart_od_nicetime<span class="op">$</span>tag_on_hour, <span class="dt">breaks=</span><span class="dv">24</span>)</code></pre></div>
-<p><img src="clpr-tutorial_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<p><img src="clpr-tutorial_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 <p>We can also pull a full day of transactions using <code>day_of_transactions</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rs &lt;-<span class="st"> </span><span class="kw">connect_rs</span>()
 date &lt;-<span class="st"> "2016-04-25"</span>
@@ -130,7 +130,7 @@ transactions_df &lt;-<span class="st"> </span><span class="kw"><a href="http://d
 time_df &lt;-<span class="st"> </span><span class="kw"><a href="../reference/spread_time_column.html">spread_time_column</a></span>(transactions_df<span class="op">$</span>transaction_time, <span class="dt">prefix=</span><span class="st">"trnsct_"</span>)
 transactions_df &lt;-<span class="st"> </span><span class="kw">cbind</span>(transactions_df,time_df)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">hist</span>(transactions_df<span class="op">$</span>trnsct_hour, <span class="dt">breaks=</span><span class="dv">24</span>)</code></pre></div>
-<p><img src="clpr-tutorial_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
+<p><img src="clpr-tutorial_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <p>Then we can calculate the average number of transactions per product type in the day:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rides_df &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_rides.html">as_rides</a></span>(transactions_tbl)
 
