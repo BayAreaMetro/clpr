@@ -69,7 +69,6 @@ descriptive_tables <- function(){
 #'@param drop_existing_table whether to drop an existing partitioned table for this date
 #'@returns the name of the table on the clipper_days schema.
 #'@export
-#'@importFrom dbplyr
 #'@importFrom dplyr tbl
 #'@importFrom readr read_file
 fares_for_day <- function(partition_time="10:00:00",
@@ -102,7 +101,7 @@ fares_for_day <- function(partition_time="10:00:00",
 #' (yday, hour, yday, row, etc) for a column
 #' we do the date parsing this way because of the UTC/datetime crossover
 #'@importFrom lubridate hour minute
-#'@import from rlang := !! enquo
+#'@importFrom rlang := !! enquo
 spread_time_column <- function(timestamp_col, prefix="t_") {
   expr <- enquo(prefix)
   hour_name <- paste0(quo_name(expr),"hour")
