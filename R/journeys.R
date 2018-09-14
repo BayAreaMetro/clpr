@@ -15,7 +15,7 @@ add_transfer_time <- function(tr_df) {
   return(tr_df)
 }
 
-#' Adds column grouping applicable rides as numbered journeys
+#' Adds columns grouping applicable rides as numbered journeys along with number of legs per journey
 #' @param tr_df a dataframe of rides
 #' @return tr_df a dataframe of rides
 add_journey_id <- function(tr_df) {
@@ -32,6 +32,13 @@ add_journey_id <- function(tr_df) {
   tr_df <- tr_df %>%
     ungroup() %>%
     dplyr::mutate(journey_id = journey_ids)
+
+  num_legs <- as.data.frame(table(tr_df$journey_id))
+  num_legs$Var1 <- num_legs$Freq
+  num_legs <- rep(num_legs$Var1, num_legs$Freq)
+
+  tr_df <- tr_df %>%
+    mutate(num_legs = num_legs)
 
   return(tr_df)
 }
