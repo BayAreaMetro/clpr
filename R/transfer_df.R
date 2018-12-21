@@ -20,7 +20,7 @@ identify_transfer_for_time <- function(tr_df, mins) {
 #' Creates a summary table of all combinations of transfers
 #' @param tr_df a dataframe of all transactions
 #' @param mins time period to qualify as a transfer (in minutes)
-#' @return transfer_df a dataframe of transfer information
+#' @return transfer_df a dataframe of showing amount of transfers between/within all operators
 create_transfer_df <- function(tr_df, mins) {
   transfer_df <- tr_df %>%
   identify_transfer_for_time(mins) %>%
