@@ -1,6 +1,7 @@
 #' Add columns for tag on time, trip duration to tag off transactions
 #' @param tr_df dataframe of transactions
 #' @return tr_df dataframe of transactions
+#' @importFrom dplyr case_when lag lead
 add_tagon_time <- function(tr_df) {
   tr_df <- tr_df %>%
     dplyr::group_by(cardid_anony) %>%
@@ -14,6 +15,7 @@ add_tagon_time <- function(tr_df) {
 #' Add column for previous purse amount and actual trip cost for trips with subtypes 2/3
 #' @param tr_df dataframe of transactions
 #' @return tr_df dataframe of transactions
+#' @importFrom dplyr case_when lag lead
 add_trip_cost <- function(tr_df) {
   tr_df <- tr_df %>%
     dplyr::group_by(cardid_anony) %>%

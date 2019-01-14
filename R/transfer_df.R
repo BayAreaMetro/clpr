@@ -2,6 +2,7 @@
 #' @param tr_df a dataframe of transactions
 #' @param mins time period to qualify as a transfer (in minutes)
 #' @return tr_df a dataframe of transactions
+#' @importFrom dplyr case_when lag lead
 identify_transfer_for_time <- function(tr_df, mins) {
   tr_df <- tr_df %>%
     clpr::as_rides() %>%
@@ -26,7 +27,7 @@ create_transfer_df <- function(tr_df, mins) {
   identify_transfer_for_time(mins) %>%
   dplyr::filter(productcategory == 1) %>%
   dplyr::group_by(participantname.transfer, participantname) %>%
-  summarise(from_operator_id = as.integer(mean(transferoperator)),
+  dplyr::summarise(from_operator_id = as.integer(mean(transferoperator)),
               to_operator_id = as.integer(mean(operatorid)),
               num_transfers = sum(is_transfer),
               num_discounted = sum(transferdiscountflag[is_transfer==1]),

@@ -9,11 +9,12 @@
 #'  group_by(product_description) %>%
 #'  summarise(count=n_distinct(cardid_anony))
 #'
-#' @importFrom dplyr left_join
+#' @importFrom dplyr left_join inner_join tbl
+#' @importFrom tibble as_tibble
 get_product_description <- function(tr_tbl) {
-  rs <- connect_rs()
+  rs <- clpr::connect_rs()
   p_map <- tbl(rs, dbplyr::in_schema("clipper","contractprodtypemap")) %>% as_tibble()
-  p_text <- tbl(rs, dbplyr::in_schema("clipper","products")) %>% as_tibble
+  p_text <- tbl(rs, dbplyr::in_schema("clipper","products")) %>% as_tibble()
   product_meta <- inner_join(p_map,p_text, by = c("issuerid", "producttype"))
 
   tr_out <- left_join(tr_tbl,product_meta,

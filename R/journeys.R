@@ -1,6 +1,7 @@
 #' Adds column classifying transfers as given by the transfer rules dataframe
 #' @param tr_df a dataframe of rides
 #' @return tr_df a dataframe of rides
+#' @importFrom dplyr lag
 add_transfer_time <- function(tr_df) {
   tr_df <- tr_df %>%
     as_rides() %>%

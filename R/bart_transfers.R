@@ -1,6 +1,7 @@
 #' Filters transactions to BART intra-transfers only
 #' @param tr_df a dataframe of transactions
 #' @return tr_df a dataframe of transactions
+#' @importFrom dplyr lag lead
 bart_to_bart <- function(tr_df) {
   tr_df <- bart_identify(tr_df)
   tr_df <- tr_df %>%
@@ -18,6 +19,7 @@ bart_to_bart <- function(tr_df) {
 #' Creates combined dataframe of multiple transactions per row
 #' @param tr_df a dataframe of transactions
 #' @return tr_df a dataframe of transactions
+#' @importFrom dplyr lead
 combined_bart_transactions <- function (tr_df) {
   tr_df <- tr_df %>%
     dplyr::group_by(cardid_anony) %>%

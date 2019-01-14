@@ -3,6 +3,7 @@ library(stringr)
 #' Adds columns identifying bart transactions, including lags and leads
 #' @param tr_df a dataframe of transactions
 #' @return tr_df a dataframe of transactions with columns: from_bart, to_bart, from_not_bart, to_not_bart
+#' @importFrom dplyr lag lead
 bart_identify <- function(tr_df) {
     tr_df <- tr_df %>%
       dplyr::group_by(cardid_anony) %>%
@@ -18,6 +19,7 @@ bart_identify <- function(tr_df) {
 #' Adds columns describing the route, time, and operator name of previous and later transactions
 #' @param tr_df a dataframe of transactions
 #' @return tr_df a dataframe of transactions
+#' @importFrom dplyr case_when lag lead
 bart_lag_and_lead_metadata <- function(tr_df) {
     tr_df <- tr_df %>%
       dplyr::group_by(cardid_anony) %>%
