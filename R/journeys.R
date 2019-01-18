@@ -8,20 +8,19 @@ add_transfer_time <- function(tr_df) {
     dplyr::arrange(transaction_time) %>%
     dplyr::mutate(previous_time = lag(transaction_time, order_by = transaction_time)) %>%
     dplyr::mutate(transfer_time = difftime(transaction_time, previous_time, units="mins")) %>%
-    dplyr::mutate(previous_participant = lag(participantname, order_by = transaction_time)) %>%
-    dplyr::left_join(transfer_rules_df,
-                     by=c("previous_participant" = "from_AgencyName",
-                          "participantname" = "to_AgencyName"))
+    dplyr::mutate(previous_participant = lag(participantname, order_by = transaction_time))
   return(tr_df)
 }
 
 #' Adds columns grouping applicable rides as numbered journeys along with number of legs per journey
 #' @param tr_df a dataframe of rides
 #' @return tr_df a dataframe of rides
-add_journey_id <- function(tr_df) {
+add_journey_id <- function(tr_df, time=60) {
   tr_df <- tr_df %>%
+    add_transfer_time() %>%
+
     dplyr::arrange(cardid_anony, transaction_time) %>%
-    dplyr::mutate(is_transfer = transfer_time < max_time)
+    dplyr::mutate(is_transfer = transfer_time < time)
 
   tr_df$is_transfer <- ifelse(is.na(tr_df$is_transfer),
                                FALSE, tr_df$is_transfer)
